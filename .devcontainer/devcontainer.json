@@ -1,7 +1,8 @@
 {
   "name": "AetherPress v0.1 (Alpha)",
   //"image": "mcr.microsoft.com/devcontainers/universal:2",
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:18-bullseye", // Use a recent Node LTS version
+  //"image": "mcr.microsoft.com/devcontainers/javascript-node:18-bullseye", // Use a recent Node LTS version
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:lts",
 
   "waitFor": "onCreateCommand",
   "updateContentCommand": "cd client && npm install && cd ../server && npm install express puppeteer && npm install --save-dev nodemon && cd ..",
@@ -55,7 +56,7 @@
   "forwardPorts": [5173, 3000, 5432],
   "portsAttributes": {
     "5173": {
-      "label": "frontend (Vite/React)",
+      "label": "frontend (Vite/Svelte)",
       "onAutoForward": "openPreview"
     },
     "3000": { "label": "backend (Express/Node.js)" },
