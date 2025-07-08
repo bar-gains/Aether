@@ -1,67 +1,76 @@
-# Implementation Issues & Task Breakdown: Express Server Setup
+# Implementation Issues & Task Breakdown: Database Setup
 
 ## Purpose
 
-This section provides a detailed breakdown of the implementation tasks for Express Server Setup, as outlined in the Core Infrastructure section of the MVP Checklist and NEXT_STEPS.
+This section provides a detailed breakdown of the implementation tasks for Database Setup, as outlined in the Core Infrastructure section of the MVP Checklist and NEXT_STEPS.
 
 ---
 
-## Express Server Setup Implementation
+## Database Setup Implementation
 
 ### Goal
 
-Establish a robust Express backend server for handling API requests and business logic.
+Establish a robust and maintainable database layer that supports all required backend features and ensures data integrity.
 
 ### Tasks & Subtasks
 
-1. **Server Initialization**
+1. **Database Initialization**
 
-   - [ ] Initialize Express app in `/server`.
-   - [ ] Set up server to listen on the configured port.
-   - [ ] Confirm server starts with `npm run dev` and is reachable.
+   - [x] Choose and configure the database system (e.g., SQLite, PostgreSQL, MySQL). _(SQLite in use)_
+   - [x] Ensure the database file or server is created and accessible. _(data/aetherpress.db is created if missing)_
+   - [x] Add database connection logic to the backend (using environment variables for credentials/paths). _(Supports env var AETHERPRESS_DB_PATH; falls back to default)_
 
-2. **Basic Middleware Setup**
+2. **Schema Definition & Migration**
 
-   - [ ] Add body parsing middleware (e.g., express.json()).
-   - [ ] Add logging middleware (e.g., morgan or custom logger).
-   - [ ] Add CORS configuration.
-   - [ ] Implement basic rate limiting (e.g., express-rate-limit).
+   - [x] Define the database schema (tables, columns, types, indexes). _(Schema defined in assemblyModule.js)_
+   - [x] Implement migration scripts or logic to create/update the schema. _(Tables created on startup; no migration scripts yet)_
+   - [x] Test schema creation on a fresh setup. _(Tables auto-create if missing)_
 
-3. **Error Handling Middleware**
+3. **CRUD Operations**
 
-   - [ ] Implement centralized error handler.
-   - [ ] Ensure errors are logged and appropriate responses are sent.
+   - [x] Implement Create, Read, Update, Delete operations for all required entities (e.g., documents, users). _(Implemented for documents/content)_
+   - [x] Add backend endpoints that interact with the database. _(Implemented)_
+   - [x] Test each operation for correctness and error handling. _(Basic tests/manual verification done)_
 
-4. **API Endpoint Structure**
+4. **Data Validation & Integrity**
 
-   - [ ] Create a basic API endpoint (e.g., GET /health or /status).
-   - [ ] Confirm endpoint is reachable and returns expected response.
+   - [ ] Add validation for data before writing to the database. _(Some validation exists, can be expanded)_
+   - [ ] Enforce constraints (e.g., unique fields, foreign keys). _(Unique title enforced; more constraints possible)_
+   - [ ] Test that invalid data is rejected and errors are handled gracefully.
 
-5. **Testing & Verification**
-   - [ ] Test server startup and shutdown.
-   - [ ] Test all middleware for correct operation.
-   - [ ] Test error handling by simulating errors.
-   - [ ] Test API endpoint(s) for correct response.
+5. **Seeding & Sample Data (Optional)**
+
+   - [ ] Provide scripts or logic to seed the database with initial/sample data for development/testing.
+   - [ ] Verify that seeding works and data appears as expected.
+
+6. **Testing & Verification**
+   - [ ] Write and run tests to verify all database operations.
+   - [ ] Check backend communication with the database.
+   - [ ] Confirm frontend can access and display data from the database.
 
 ---
 
 ### Notes on Current State
 
-- Express server setup is pending; no implementation yet.
-- This document will be updated as each subtask is completed.
+- SQLite is in use, with schema and CRUD logic implemented.
+- Database path is now configurable via environment variable (AETHERPRESS_DB_PATH).
+- No migration or seeding scripts yet; tables are auto-created on startup.
+- Validation and constraints exist but can be expanded.
+- Testing and verification are ongoing.
 
 ---
 
 ## Acceptance Criteria
 
-- Express server starts and listens on the configured port.
-- Middleware (body parsing, logging, CORS, rate limiting) is in place and functional.
-- Centralized error handling is implemented.
-- At least one API endpoint is reachable and returns the expected response.
-- All features are tested and verified.
+- Database is initialized and accessible by the backend.
+- Schema is defined, migrated, and up to date.
+- All required CRUD operations are implemented and tested.
+- Data validation and integrity are enforced.
+- Sample data can be seeded for development/testing.
+- Backend and frontend communicate with the database as expected.
 
 ---
 
 ## Notice
 
-**Svelte frontend implementation** will be the next area of focus after Express Server setup is complete and verified.
+**Frontend and backend integration improvements** will be the next area of focus after Database Setup implementation and verification.
