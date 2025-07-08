@@ -57,10 +57,10 @@
   "forwardPorts": [5173, 3000, 5432],
   "portsAttributes": {
     "5173": {
-      "label": "frontend (Vite/Svelte)",
+      "label": "client (Vite/Svelte)",
       "onAutoForward": "openPreview"
     },
-    "3000": { "label": "backend (Express/Node.js)" },
+    "3000": { "label": "server (Express/Node.js)" },
     "5432": { "label": "database (PostgreSQL)" }
   },
 

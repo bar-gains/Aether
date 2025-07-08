@@ -16,26 +16,26 @@ Establish a robust Express backend server for handling API requests and business
 
 1. **Server Initialization**
 
-   - [ ] Initialize Express app in `/server`.
-   - [ ] Set up server to listen on the configured port.
-   - [ ] Confirm server starts with `npm run dev` and is reachable.
+   - [x] Initialize Express app in `/server`.
+   - [x] Set up server to listen on the configured port.
+   - [x] Confirm server starts with `npm run dev` and is reachable.
 
 2. **Basic Middleware Setup**
 
-   - [ ] Add body parsing middleware (e.g., express.json()).
-   - [ ] Add logging middleware (e.g., morgan or custom logger).
-   - [ ] Add CORS configuration.
-   - [ ] Implement basic rate limiting (e.g., express-rate-limit).
+   - [x] Add body parsing middleware (e.g., express.json()).
+   - [x] Add logging middleware (e.g., morgan or custom logger).
+   - [x] Add CORS configuration.
+   - [x] Implement basic rate limiting (e.g., express-rate-limit).
 
 3. **Error Handling Middleware**
 
-   - [ ] Implement centralized error handler.
+   - [x] Implement centralized error handler.
    - [ ] Ensure errors are logged and appropriate responses are sent.
 
 4. **API Endpoint Structure**
 
-   - [ ] Create a basic API endpoint (e.g., GET /health or /status).
-   - [ ] Confirm endpoint is reachable and returns expected response.
+   - [x] Create a basic API endpoint (e.g., GET /health or /status).
+   - [x] Confirm endpoint is reachable and returns expected response.
 
 5. **Testing & Verification**
    - [ ] Test server startup and shutdown.
@@ -47,8 +47,9 @@ Establish a robust Express backend server for handling API requests and business
 
 ### Notes on Current State
 
-- Express server setup is pending; no implementation yet.
-- This document will be updated as each subtask is completed.
+- Express server is implemented with middleware, health endpoint, and error handler.
+- Rate limiting warning resolved with `trust proxy` setting.
+- Testing and verification are next.
 
 ---
 
