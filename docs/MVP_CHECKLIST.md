@@ -10,7 +10,7 @@
 - [ ] CORS configuration
 - [ ] Rate limiting
 
-### React Frontend
+### Svelte Frontend
 
 - [ ] Component structure
 - [ ] State management
@@ -20,11 +20,12 @@
 
 ### Database Setup
 
-- [ ] SQLite initialization
+- [ ] SQLite initialization (current)
 - [ ] Schema design
 - [ ] Migration system
 - [ ] Basic CRUD operations
 - [ ] Error handling
+- [ ] PostgreSQL migration (planned)
 
 ## Feature Checklist
 
@@ -97,7 +98,8 @@
 #### Backend
 
 - [ ] GET /export endpoint
-- [ ] pdf-lib setup
+- [ ] pdf-lib setup (prototype)
+- [ ] Puppeteer setup (planned)
 - [ ] Content formatting
 - [ ] File handling
 
@@ -178,6 +180,22 @@
 - [ ] Resource optimization
 - [ ] Error monitoring
 - [ ] Logging setup
+
+## Planned Enhancements
+
+- [ ] PostgreSQL migration for production scalability
+- [ ] Advanced PDF export with Puppeteer
+- [ ] Real AI service integration (OpenAI, Gemini, etc.)
+- [ ] Asynchronous processing and performance optimization
+- [ ] Enhanced UI/UX (accessibility, mobile, feedback)
+- [ ] User authentication and session management
+- [ ] Database schema expansion
+- [ ] User management and content organization
+- [ ] Template and asset management
+- [ ] Notifications and feedback system
+- [ ] Workflow automation and integration framework
+- [ ] Analytics, monitoring, and reporting
+- [ ] Enterprise and community features
 
 ## Definition of Done
 

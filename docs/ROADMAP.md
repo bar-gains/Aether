@@ -1,31 +1,28 @@
 # AetherPress Development Roadmap
 
-## Phase 0: Current Milestones (Completed)
+## Phase 0: Current Milestones (All Pending)
 
 ### Core Infrastructure
 
-1. **Express Backend Setup** ✓
+1. **Express Backend Setup** (Pending)
    Goal: Establish robust backend server infrastructure for handling API requests and business logic
    Acceptance Criteria:
-
    - Server starts and handles requests without errors
    - Middleware chain processes requests correctly
    - Error handling returns appropriate status codes and messages
-   - Basic API endpoint structure pending
+   - Basic API endpoint structure implemented
 
-2. **React Frontend Integration** ✓
-   Goal: Provide responsive and intuitive user interface for content generation and management
+2. **Svelte Frontend Integration** (Pending)
+   Goal: Provide responsive and intuitive user interface for content generation and management using Svelte SPA
    Acceptance Criteria:
-
    - Frontend successfully communicates with backend API
    - Components render and update efficiently
    - User interactions are smooth and provide feedback
    - Error states are properly handled and displayed
 
-3. **Database Implementation** ✓
-   Goal: Reliable data persistence layer for storing user content and application state
+3. **SQLite Database Implementation** (Pending)
+   Goal: Reliable data persistence layer for storing user content and application state using SQLite (with future migration to PostgreSQL planned)
    Acceptance Criteria:
-
    - SQLite successfully stores and retrieves data
    - Data integrity is maintained across operations
    - Query performance meets response time requirements
@@ -34,7 +31,6 @@
 4. **API Architecture Enhancement** (Pending)
    Goal: Complete and optimize API endpoint structure
    Acceptance Criteria:
-
    - RESTful endpoint organization
    - Comprehensive route documentation
    - Standardized response formats
@@ -50,7 +46,7 @@
 
 ### Base Features (MVP)
 
-1. **Prompt Handling** (Completed)
+1. **Prompt Handling** (Pending)
 
    - Goal: Accept user input for AI processing and route it to the backend.
    - Acceptance Criteria:
@@ -58,7 +54,7 @@
      - Backend receives and processes the prompt.
      - System provides feedback on submission success or failure.
 
-2. **AI Processing** (Completed)
+2. **AI Processing** (Pending)
 
    - Goal: Simulate AI content generation using a service abstraction layer.
    - Acceptance Criteria:
@@ -66,7 +62,7 @@
      - Service abstraction layer is in place for future real AI integration.
      - Errors in AI processing are handled gracefully.
 
-3. **Preview Generation** (Completed)
+3. **Preview Generation** (Pending)
 
    - Goal: Provide a basic HTML preview of generated content.
    - Acceptance Criteria:
@@ -74,7 +70,7 @@
      - Preview updates in real time as content changes.
      - Preview matches the structure of the final export.
 
-4. **Basic Override** (Completed)
+4. **Basic Override** (Pending)
 
    - Goal: Allow minimal user edits to generated content before export.
    - Acceptance Criteria:
@@ -82,7 +78,7 @@
      - Edits are reflected in the preview.
      - Edits are included in the exported PDF.
 
-5. **PDF Export (Prototype)** (Completed)
+5. **PDF Export (Prototype)** (Pending)
 
    - Goal: Generate PDFs using pdf-lib for prototype purposes.
    - Acceptance Criteria:
@@ -90,7 +86,7 @@
      - Exported PDF matches the preview layout.
      - PDF generation is reliable for basic content.
 
-6. **Database Integration** (Completed)
+6. **Database Integration** (Pending)
    - Goal: Store and retrieve content using SQLite.
    - Acceptance Criteria:
      - Content is saved to and loaded from the database.
@@ -146,7 +142,16 @@
      - Role-based access control is implemented.
      - Sensitive data is protected according to best practices.
 
-6. **Database Schema Expansion** (Planned)
+6. **Database Migration to PostgreSQL** (Planned)
+
+   - Goal: Transition from SQLite to PostgreSQL for production scalability and advanced features.
+   - Acceptance Criteria:
+     - PostgreSQL is set up and integrated as the primary database.
+     - Data is migrated from SQLite to PostgreSQL with integrity.
+     - New features leverage PostgreSQL capabilities.
+     - Documentation is updated to reflect the migration.
+
+7. **Database Schema Expansion** (Planned)
    - Goal: Expand the database to support more complex workflows and data types.
    - Acceptance Criteria:
      - New tables and relationships are added for advanced features.
@@ -193,6 +198,7 @@
      - System validates and previews templates before use.
 
 5. **Notifications & Feedback** (Planned)
+
    - Goal: Keep users informed of important events and provide actionable feedback.
    - Acceptance Criteria:
      - Users receive notifications for key events (export complete, errors, etc.).
@@ -230,6 +236,7 @@
      - Data export for further analysis.
 
 4. **Enterprise & Community Features** (Planned)
+
    - Goal: Support advanced deployment, collaboration, and extensibility needs.
    - Acceptance Criteria:
      - Multi-tenant and enterprise authentication support.
