@@ -1,4 +1,8 @@
-# GitHub Codespaces ♥️ Express
+# AetherPress Prototype - Welcome
+
+The goal is a quick-build prototype involving a Node.js backend (for Puppeteer compatibility and potentially Express/FastAPI) and a modern frontend SPA (Svelte)
+
+## GitHub Codespaces ♥️ Express
 
 Welcome to your shiny new Codespace running Express! We've got everything fired up and running for you to explore Express.
 

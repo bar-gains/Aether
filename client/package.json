@@ -1,0 +1,11 @@
+{
+  "name": "client",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "echo 'Define your production start script here'",
+    "dev": "echo 'Define your dev script (e.g., vite, react-scripts start) here'"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
