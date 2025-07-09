@@ -1,5 +1,7 @@
 # AetherPress Prototype - Welcome
 
+> **Current Stable Version:** The current stable version of this project is named `core`. All new stable development and releases are tracked on the `core` branch.
+
 The goal is a quick-build prototype involving a Node.js backend (for Puppeteer compatibility and potentially Express/FastAPI) and a modern frontend SPA (Svelte). This project demonstrates the foundational architecture for a quick-build prototype of AetherPress, focusing on the core loop: Prompt -> AI Processing -> Preview -> Basic Override -> PDF Export.
 
 ## Vision
