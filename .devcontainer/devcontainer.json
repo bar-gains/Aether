@@ -19,6 +19,7 @@
       "extensions": [
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
+        "svelte.svelte-vscode",
         "bradlc.vscode-tailwindcss",
         "prisma.prisma",
         "github.copilot",
