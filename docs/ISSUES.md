@@ -1,68 +1,58 @@
-# Implementation Issues & Task Breakdown: Express Server Setup
+# Implementation Issues & Task Breakdown: Svelte Frontend Setup
 
 ## Purpose
 
-This section provides a detailed breakdown of the implementation tasks for Express Server Setup, as outlined in the Core Infrastructure section of the MVP Checklist and NEXT_STEPS.
+This section provides a detailed breakdown of the implementation tasks for the Svelte Frontend Setup, as outlined in the Core Infrastructure section of the MVP Checklist and NEXT_STEPS.
 
 ---
 
-## Express Server Setup Implementation
+## Svelte Frontend Setup Implementation
 
 ### Goal
 
-Establish a robust Express backend server for handling API requests and business logic.
+Establish a functional Svelte frontend that communicates with the backend and provides a foundation for UI/UX.
 
 ### Tasks & Subtasks
 
-1. **Server Initialization**
+1. **Frontend Initialization**
 
-   - [x] Initialize Express app in `/server`.
-   - [x] Set up server to listen on the configured port.
-   - [x] Confirm server starts with `npm run dev` and is reachable.
+   - [ ] Set up the Svelte app structure in `/client`.
+   - [ ] Confirm app starts with `npm run dev` and is reachable.
 
-2. **Basic Middleware Setup**
+2. **Component & Folder Structure**
 
-   - [x] Add body parsing middleware (e.g., express.json()).
-   - [x] Add logging middleware (e.g., morgan or custom logger).
-   - [x] Add CORS configuration.
-   - [x] Implement basic rate limiting (e.g., express-rate-limit).
+   - [ ] Implement a basic `App` component.
+   - [ ] Create folders for components, assets, and styles.
 
-3. **Error Handling Middleware**
+3. **State Management**
 
-   - [x] Implement centralized error handler.
-   - [ ] Ensure errors are logged and appropriate responses are sent.
+   - [ ] Integrate state management (Svelte stores or context).
 
-4. **API Endpoint Structure**
+4. **API Integration**
 
-   - [x] Create a basic API endpoint (e.g., GET /health or /status).
-   - [x] Confirm endpoint is reachable and returns expected response.
+   - [ ] Implement API integration for backend communication (e.g., fetch or axios).
+   - [ ] Add error handling for API calls and UI feedback.
 
-5. **Testing & Verification**
-   - [ ] Test server startup and shutdown.
-   - [ ] Test all middleware for correct operation.
-   - [ ] Test error handling by simulating errors.
-   - [ ] Test API endpoint(s) for correct response.
+5. **Minimal UI/UX**
+   - [ ] Create a minimal UI/UX for initial user interaction.
 
 ---
 
 ### Notes on Current State
 
-- Express server is implemented with middleware, health endpoint, and error handler.
-- Rate limiting warning resolved with `trust proxy` setting.
-- Testing and verification are next.
+- Express backend is implemented and tested.
+- Svelte frontend setup is the next area of focus.
 
 ---
 
 ## Acceptance Criteria
 
-- Express server starts and listens on the configured port.
-- Middleware (body parsing, logging, CORS, rate limiting) is in place and functional.
-- Centralized error handling is implemented.
-- At least one API endpoint is reachable and returns the expected response.
-- All features are tested and verified.
+- App starts with `npm run dev` in `/client`.
+- Can successfully call backend endpoints and display results.
+- Handles errors gracefully and displays user-friendly messages.
 
 ---
 
 ## Notice
 
-**Svelte frontend implementation** will be the next area of focus after Express Server setup is complete and verified.
+**Database setup** will be the next area of focus after Svelte frontend implementation is complete and verified.
