@@ -53,6 +53,180 @@ app.use((err, req, res, next) => {
 // Database initialization
 require("./db");
 
+const crud = require("./crud");
+
+// --- PROMPTS CRUD API ---
+app.post("/api/prompts", (req, res, next) => {
+  const { prompt } = req.body;
+  if (!prompt) return res.status(400).json({ error: "Prompt is required" });
+  crud.createPrompt(prompt, (err, result) => {
+    if (err) return next(err);
+    res.status(201).json(result);
+  });
+});
+
+app.get("/api/prompts", (req, res, next) => {
+  crud.getPrompts((err, rows) => {
+    if (err) return next(err);
+    res.json(rows);
+  });
+});
+
+app.get("/api/prompts/:id", (req, res, next) => {
+  crud.getPromptById(req.params.id, (err, row) => {
+    if (err) return next(err);
+    if (!row) return res.status(404).json({ error: "Not found" });
+    res.json(row);
+  });
+});
+
+app.put("/api/prompts/:id", (req, res, next) => {
+  const { prompt } = req.body;
+  if (!prompt) return res.status(400).json({ error: "Prompt is required" });
+  crud.updatePrompt(req.params.id, prompt, (err, result) => {
+    if (err) return next(err);
+    res.json(result);
+  });
+});
+
+app.delete("/api/prompts/:id", (req, res, next) => {
+  crud.deletePrompt(req.params.id, (err, result) => {
+    if (err) return next(err);
+    res.json(result);
+  });
+});
+
+// --- AI_RESULTS CRUD API ---
+app.post("/api/ai_results", (req, res, next) => {
+  const { prompt_id, result } = req.body;
+  if (!prompt_id || !result)
+    return res.status(400).json({ error: "prompt_id and result are required" });
+  crud.createAIResult(prompt_id, result, (err, resultObj) => {
+    if (err) return next(err);
+    res.status(201).json(resultObj);
+  });
+});
+
+app.get("/api/ai_results", (req, res, next) => {
+  crud.getAIResults((err, rows) => {
+    if (err) return next(err);
+    res.json(rows);
+  });
+});
+
+app.get("/api/ai_results/:id", (req, res, next) => {
+  crud.getAIResultById(req.params.id, (err, row) => {
+    if (err) return next(err);
+    if (!row) return res.status(404).json({ error: "Not found" });
+    res.json(row);
+  });
+});
+
+app.put("/api/ai_results/:id", (req, res, next) => {
+  const { result } = req.body;
+  if (!result) return res.status(400).json({ error: "result is required" });
+  crud.updateAIResult(req.params.id, result, (err, resultObj) => {
+    if (err) return next(err);
+    res.json(resultObj);
+  });
+});
+
+app.delete("/api/ai_results/:id", (req, res, next) => {
+  crud.deleteAIResult(req.params.id, (err, resultObj) => {
+    if (err) return next(err);
+    res.json(resultObj);
+  });
+});
+
+// --- OVERRIDES CRUD API ---
+app.post("/api/overrides", (req, res, next) => {
+  const { ai_result_id, override } = req.body;
+  if (!ai_result_id || !override)
+    return res
+      .status(400)
+      .json({ error: "ai_result_id and override are required" });
+  crud.createOverride(ai_result_id, override, (err, resultObj) => {
+    if (err) return next(err);
+    res.status(201).json(resultObj);
+  });
+});
+
+app.get("/api/overrides", (req, res, next) => {
+  crud.getOverrides((err, rows) => {
+    if (err) return next(err);
+    res.json(rows);
+  });
+});
+
+app.get("/api/overrides/:id", (req, res, next) => {
+  crud.getOverrideById(req.params.id, (err, row) => {
+    if (err) return next(err);
+    if (!row) return res.status(404).json({ error: "Not found" });
+    res.json(row);
+  });
+});
+
+app.put("/api/overrides/:id", (req, res, next) => {
+  const { override } = req.body;
+  if (!override) return res.status(400).json({ error: "override is required" });
+  crud.updateOverride(req.params.id, override, (err, resultObj) => {
+    if (err) return next(err);
+    res.json(resultObj);
+  });
+});
+
+app.delete("/api/overrides/:id", (req, res, next) => {
+  crud.deleteOverride(req.params.id, (err, resultObj) => {
+    if (err) return next(err);
+    res.json(resultObj);
+  });
+});
+
+// --- PDF_EXPORTS CRUD API ---
+app.post("/api/pdf_exports", (req, res, next) => {
+  const { ai_result_id, file_path } = req.body;
+  if (!ai_result_id || !file_path)
+    return res
+      .status(400)
+      .json({ error: "ai_result_id and file_path are required" });
+  crud.createPDFExport(ai_result_id, file_path, (err, resultObj) => {
+    if (err) return next(err);
+    res.status(201).json(resultObj);
+  });
+});
+
+app.get("/api/pdf_exports", (req, res, next) => {
+  crud.getPDFExports((err, rows) => {
+    if (err) return next(err);
+    res.json(rows);
+  });
+});
+
+app.get("/api/pdf_exports/:id", (req, res, next) => {
+  crud.getPDFExportById(req.params.id, (err, row) => {
+    if (err) return next(err);
+    if (!row) return res.status(404).json({ error: "Not found" });
+    res.json(row);
+  });
+});
+
+app.put("/api/pdf_exports/:id", (req, res, next) => {
+  const { file_path } = req.body;
+  if (!file_path)
+    return res.status(400).json({ error: "file_path is required" });
+  crud.updatePDFExport(req.params.id, file_path, (err, resultObj) => {
+    if (err) return next(err);
+    res.json(resultObj);
+  });
+});
+
+app.delete("/api/pdf_exports/:id", (req, res, next) => {
+  crud.deletePDFExport(req.params.id, (err, resultObj) => {
+    if (err) return next(err);
+    res.json(resultObj);
+  });
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);

@@ -26,11 +26,11 @@ Ensure reliable data persistence using SQLite (with planned migration to Postgre
 
 3. **CRUD Operations**
 
-   - [ ] Implement basic CRUD operations in the backend (create, read, update, delete).
-   - [ ] Add error handling for all database operations.
+   - [x] Implement basic CRUD operations in the backend (create, read, update, delete).
+   - [x] Add error handling for all database operations.
 
 4. **PostgreSQL Migration Plan**
-   - [ ] Plan for future PostgreSQL migration and document the approach.
+   - [x] Plan for future PostgreSQL migration and document the approach.
 
 ---
 

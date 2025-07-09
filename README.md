@@ -4,23 +4,54 @@ The goal is a quick-build prototype involving a Node.js backend (for Puppeteer c
 
 ## Vision
 
-To empower creators (writers, poets, educators, marketers) to effortlessly design and publish visually stunning, graphically rich eBooks, leveraging AI for enhanced creativity, efficiency, and personalization.
+To empower creators (writers, poets, educators, marketers) to effortlessly design and publish visually stunning, graphically rich eBooks, leveraging AI for enhanced creativity, efficiency, and personalization by:
+
+- Delivering eye-catching, benchmark-quality drafts at lightning speed.
+- Empowering users with modular, precise control over every aspect of their eBook.
+- Acting as your creative partner—the AI handles the heavy lifting, leaving you free to perfect your vision.
+
+## Unified Testing & Module System (Summary)
+
+**Client tests**: Powered by Vitest for fast, modern Svelte development.
+**Server tests**: Powered by Vitest for Node.js/JavaScript workflows.
+**Module System**: CommonJS (CJS) is used in the backend for compatibility; ESM is used in the frontend for Svelte/Vite.
 
 ## Project Structure
 
-- `/server` — All backend code (Express server, Puppeteer, modules)
-- `/client` — Svelte frontend SPA
-- `/data` — (Optional) Database files
-- `/samples` — Sample files (e.g., PNGs, PDFs)
-- `/docs` — Project documentation
+- `server/` — All backend code (Express server, Puppeteer, modules)
+- `client/` — Svelte frontend SPA
+- `data/` — (Optional) Database files
+- `samples/` — Sample files (e.g., PNGs, PDFs)
+- `docs/` — Project documentation
+- `shared/` — Code or assets shared between client and server (e.g., utility functions, types, or constants).
+- `scripts/` — Usually holds automation scripts (e.g., deployment, data migration, or setup scripts).
+- `config/` — Configuration files (e.g., environment settings, service credentials, or build configs).
 
-## Features
+## Technology Vibe
 
-- **Prompt Handling**: Accept user input for AI processing
-- **AI Processing**: Integrate real AI services for text and image generation
-- **Preview Generation**: Basic HTML preview of generated content
-- **Basic Override**: Minimal user edits to the generated content
-- **PDF Export**: Generate PDFs using Puppeteer for advanced HTML rendering and layouts
+- **Client:** Modern, component-based JS framework (Vite/Svelte). Focus on a clean, responsive UI.
+- **Server:** Scalable platform (Express/Node.js). Ready to orchestrate multiple API calls.
+- **Database:** For a balance of structure and flexibility, SQLite (with planned migration to PostgreSQL/JSONB).
+- **AI:**
+  - **Default:** Use Google's Gemini for both text and image generation.
+  - Leverage best-in-class third-party APIs for core GenAI (image generation, possibly LLM for assistant). Build custom logic for agent orchestration and workflow, not foundational models.
+  - Optionally support use of [GitHub Models](https://github.com/features/models) to find and experiment with AI models for free.
+- **PDF Generation:** Use a proven, robust library, puppeteer for HTML-to-PDF.
+- **Persistence:** Standard database for user accounts, projects, preferences, asset metadata.
+
+## Key Features
+
+- **Prompt Engine ("The Magic Wand"):**  
+  Uses natural language processing to interpret your creative prompt, ensuring that your ideas—no matter how abstract—are understood and transformed into content.
+
+- **AI Orchestrator ("The Conductor"):**  
+  Seamlessly manages the AI Content Agent, Image Agent, Layout Engine, and Assembly Engine to balance creativity with consistency.
+
+- **Modular Dashboard ("The Control Panel"):**  
+  Provides distinct modules for content, images, layout, and settings, allowing for targeted tweaks without disrupting your entire project.
+
+- **Dynamic Live Preview & Export:**  
+  See changes in near real-time and export a high-fidelity PDF that mirrors the live preview down to the pixel.
 
 ## API Endpoints (Core Loop)
 
