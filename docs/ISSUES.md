@@ -16,13 +16,13 @@ Ensure reliable data persistence using SQLite (with planned migration to Postgre
 
 1. **Database Initialization**
 
-   - [ ] Initialize SQLite database in `/data`.
-   - [ ] Confirm database file exists and is accessible.
+   - [x] Initialize SQLite database in `/data`.
+   - [x] Confirm database file exists and is accessible.
 
 2. **Schema Design & Migration**
 
-   - [ ] Design and document the schema for required tables.
-   - [ ] Implement a migration system or script for schema updates.
+   - [x] Design and document the schema for required tables.
+   - [x] Implement a migration system or script for schema updates.
 
 3. **CRUD Operations**
 
