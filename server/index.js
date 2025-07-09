@@ -25,10 +25,29 @@ app.get("/", (req, res) => {
   res.send("Hello, world! Your Express server is running.");
 });
 
+// Test error route
+app.get("/test-error", (req, res, next) => {
+  const err = new Error("Simulated error for testing");
+  err.status = 418;
+  next(err);
+});
+
 // Centralized error handler
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: "Internal Server Error" });
+  // Log error details
+  console.error("--- Error Handler ---");
+  console.error("Time:", new Date().toISOString());
+  console.error("Method:", req.method);
+  console.error("URL:", req.originalUrl);
+  console.error("Body:", req.body);
+  console.error("Error Stack:", err.stack);
+
+  // Differentiate error response by environment
+  const isDev = process.env.NODE_ENV !== "production";
+  res.status(err.status || 500).json({
+    error: isDev ? err.message : "Internal Server Error",
+    ...(isDev && { stack: err.stack }),
+  });
 });
 
 // Start server
