@@ -1,55 +1,71 @@
-# Implementation Issues & Task Breakdown: Database Setup
+# Implementation Issues & Task Breakdown: Express Server Enhancements
 
 ## Purpose
 
-This section provides a detailed breakdown of the implementation tasks for Database Setup, as outlined in the Core Infrastructure section of the MVP Checklist and NEXT_STEPS.
+This section provides a detailed breakdown of the next implementation tasks for Express Server Enhancements, as outlined in the Core Infrastructure section of the MVP Checklist and NEXT_STEPS.
 
 ---
 
-## Database Setup Implementation
+## Express Server Enhancements Implementation
 
 ### Goal
 
-Ensure reliable data persistence using SQLite (with planned migration to PostgreSQL).
+Strengthen the Express backend with advanced middleware, API versioning, validation, documentation, and scalability features.
 
 ### Tasks & Subtasks
 
-1. **Database Initialization**
+1. **Advanced Middleware**
 
-   - [x] Initialize SQLite database in `/data`.
-   - [x] Confirm database file exists and is accessible.
+   - [ ] Add security middleware (e.g., helmet).
+   - [ ] Add enhanced logging (e.g., winston or morgan with custom formats).
+   - [ ] Add compression middleware (e.g., compression).
 
-2. **Schema Design & Migration**
+2. **API Versioning**
 
-   - [x] Design and document the schema for required tables.
-   - [x] Implement a migration system or script for schema updates.
+   - [ ] Design a versioning strategy (e.g., URL prefix `/api/v1/`).
+   - [ ] Refactor routes to support versioning.
 
-3. **CRUD Operations**
+3. **Request Validation & Sanitization**
 
-   - [x] Implement basic CRUD operations in the backend (create, read, update, delete).
-   - [x] Add error handling for all database operations.
+   - [ ] Integrate a validation library (e.g., express-validator or joi).
+   - [ ] Add validation and sanitization to all API endpoints.
+   - [ ] Ensure proper error responses for invalid input.
 
-4. **PostgreSQL Migration Plan**
-   - [x] Plan for future PostgreSQL migration and document the approach.
+4. **Automated API Documentation**
+
+   - [ ] Integrate Swagger/OpenAPI (e.g., swagger-ui-express).
+   - [ ] Document all endpoints and schemas.
+   - [ ] Ensure docs are auto-generated and accessible (e.g., `/api-docs`).
+
+5. **Authentication & Authorization (Planning)**
+
+   - [ ] Plan for future authentication and authorization middleware.
+   - [ ] Document approach and requirements.
+
+6. **Scalability Preparation**
+   - [ ] Research and plan for clustering and load balancing.
+   - [ ] Document strategies for scaling Express in production.
 
 ---
 
 ### Notes on Current State
 
-- Express backend and Svelte frontend are implemented and tested.
-- Database setup is the next area of focus.
+- Core Express backend is implemented and tested.
+- Enhancements will improve security, maintainability, and readiness for production.
 
 ---
 
 ## Acceptance Criteria
 
-- Database file exists and is accessible.
-- All required tables are present and correctly structured.
-- CRUD operations work as expected and handle errors.
-- Migration plan to PostgreSQL is documented.
+- Security, logging, and compression middleware are active.
+- API versioning is in place and routes are updated.
+- All endpoints validate and sanitize input, with clear error responses.
+- Automated API documentation is available and up to date.
+- Authentication/authorization plan is documented.
+- Scalability strategies are documented.
 
 ---
 
 ## Notice
 
-**Planned enhancements** (e.g., advanced middleware, API versioning, request validation, automated docs, authentication, scaling) will follow after database setup is complete and verified.
+**Further enhancements** (e.g., advanced monitoring, rate limiting, service mesh integration) can be planned after these enhancements are complete and verified.
