@@ -16,25 +16,25 @@ Establish a functional Svelte frontend that communicates with the backend and pr
 
 1. **Frontend Initialization**
 
-   - [ ] Set up the Svelte app structure in `/client`.
-   - [ ] Confirm app starts with `npm run dev` and is reachable.
+   - [x] Set up the Svelte app structure in `/client`.
+   - [x] Confirm app starts with `npm run dev` and is reachable.
 
 2. **Component & Folder Structure**
 
-   - [ ] Implement a basic `App` component.
-   - [ ] Create folders for components, assets, and styles.
+   - [x] Implement a basic `App` component.
+   - [x] Create folders for components, assets, and styles.
 
 3. **State Management**
 
-   - [ ] Integrate state management (Svelte stores or context).
+   - [x] Integrate state management (Svelte stores or context).
 
 4. **API Integration**
 
-   - [ ] Implement API integration for backend communication (e.g., fetch or axios).
-   - [ ] Add error handling for API calls and UI feedback.
+   - [x] Implement API integration for backend communication (e.g., fetch or axios).
+   - [x] Add error handling for API calls and UI feedback.
 
 5. **Minimal UI/UX**
-   - [ ] Create a minimal UI/UX for initial user interaction.
+   - [x] Create a minimal UI/UX for initial user interaction.
 
 ---
 
