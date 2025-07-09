@@ -44,7 +44,7 @@
 
 ---
 
-## 3. Database Setup (Pending)
+## 3. Database Setup ✔
 
 **Goal:** Ensure reliable data persistence using SQLite (with planned migration to PostgreSQL).
 
