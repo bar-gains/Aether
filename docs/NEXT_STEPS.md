@@ -1,6 +1,6 @@
 # NEXT_STEPS: Core Infrastructure Implementation Plan
 
-## 1. Express Server (Pending)
+## 1. Express Server ✔
 
 - **Status:** Pending
 
@@ -23,7 +23,7 @@
 
 ---
 
-## 2. Svelte Frontend (Pending)
+## 2. Svelte Frontend ✔
 
 **Goal:** Establish a functional Svelte frontend that communicates with the backend and provides a foundation for UI/UX.
 
