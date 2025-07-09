@@ -1,58 +1,55 @@
-# Implementation Issues & Task Breakdown: Svelte Frontend Setup
+# Implementation Issues & Task Breakdown: Database Setup
 
 ## Purpose
 
-This section provides a detailed breakdown of the implementation tasks for the Svelte Frontend Setup, as outlined in the Core Infrastructure section of the MVP Checklist and NEXT_STEPS.
+This section provides a detailed breakdown of the implementation tasks for Database Setup, as outlined in the Core Infrastructure section of the MVP Checklist and NEXT_STEPS.
 
 ---
 
-## Svelte Frontend Setup Implementation
+## Database Setup Implementation
 
 ### Goal
 
-Establish a functional Svelte frontend that communicates with the backend and provides a foundation for UI/UX.
+Ensure reliable data persistence using SQLite (with planned migration to PostgreSQL).
 
 ### Tasks & Subtasks
 
-1. **Frontend Initialization**
+1. **Database Initialization**
 
-   - [x] Set up the Svelte app structure in `/client`.
-   - [x] Confirm app starts with `npm run dev` and is reachable.
+   - [ ] Initialize SQLite database in `/data`.
+   - [ ] Confirm database file exists and is accessible.
 
-2. **Component & Folder Structure**
+2. **Schema Design & Migration**
 
-   - [x] Implement a basic `App` component.
-   - [x] Create folders for components, assets, and styles.
+   - [ ] Design and document the schema for required tables.
+   - [ ] Implement a migration system or script for schema updates.
 
-3. **State Management**
+3. **CRUD Operations**
 
-   - [x] Integrate state management (Svelte stores or context).
+   - [ ] Implement basic CRUD operations in the backend (create, read, update, delete).
+   - [ ] Add error handling for all database operations.
 
-4. **API Integration**
-
-   - [x] Implement API integration for backend communication (e.g., fetch or axios).
-   - [x] Add error handling for API calls and UI feedback.
-
-5. **Minimal UI/UX**
-   - [x] Create a minimal UI/UX for initial user interaction.
+4. **PostgreSQL Migration Plan**
+   - [ ] Plan for future PostgreSQL migration and document the approach.
 
 ---
 
 ### Notes on Current State
 
-- Express backend is implemented and tested.
-- Svelte frontend setup is the next area of focus.
+- Express backend and Svelte frontend are implemented and tested.
+- Database setup is the next area of focus.
 
 ---
 
 ## Acceptance Criteria
 
-- App starts with `npm run dev` in `/client`.
-- Can successfully call backend endpoints and display results.
-- Handles errors gracefully and displays user-friendly messages.
+- Database file exists and is accessible.
+- All required tables are present and correctly structured.
+- CRUD operations work as expected and handle errors.
+- Migration plan to PostgreSQL is documented.
 
 ---
 
 ## Notice
 
-**Database setup** will be the next area of focus after Svelte frontend implementation is complete and verified.
+**Planned enhancements** (e.g., advanced middleware, API versioning, request validation, automated docs, authentication, scaling) will follow after database setup is complete and verified.
