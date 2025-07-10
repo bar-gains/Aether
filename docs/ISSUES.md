@@ -60,6 +60,14 @@ Establish a robust AI service abstraction and content generation flow, enabling 
 
 ---
 
+### TODO: Restore Frontend Test Automation
+
+- No client/ tests are currently present or tracked.
+- Add a script in scripts/ (e.g., run-client-tests.sh) to run all frontend (client/) tests from anywhere in the project, mirroring the backend test script.
+- Scaffold and commit at least one Vitest-based test for the Svelte frontend to re-establish automated client testing.
+
+---
+
 ## Acceptance Criteria
 
 - The backend uses a service abstraction for AI content generation.

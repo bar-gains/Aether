@@ -56,7 +56,10 @@ require("./db");
 const crud = require("./crud");
 
 // --- PROMPT PROCESSING ENDPOINT ---
-app.post("/prompt", (req, res, next) => {
+const { MockAIService } = require("./aiService");
+const aiService = new MockAIService();
+
+app.post("/prompt", async (req, res, next) => {
   const { prompt } = req.body;
   // Input validation
   if (typeof prompt !== "string" || !prompt.trim()) {
@@ -64,14 +67,17 @@ app.post("/prompt", (req, res, next) => {
       .status(400)
       .json({ error: "Prompt is required and must be a non-empty string." });
   }
-  // Simulate AI processing (replace with real AI integration later)
-  const aiResult = `Echo: ${prompt}`;
-  // Save prompt to DB (optional, for audit/logging)
-  crud.createPrompt(prompt, (err, dbResult) => {
-    if (err) return next(err);
-    // Respond with AI result and prompt id
-    res.status(201).json({ result: aiResult, promptId: dbResult.id });
-  });
+  try {
+    // Use AI service abstraction
+    const aiResponse = await aiService.generateText(prompt);
+    crud.createPrompt(prompt, (err, dbResult) => {
+      if (err) return next(err);
+      res.status(201).json({ ...aiResponse, promptId: dbResult.id });
+    });
+  } catch (err) {
+    // AI service error handling
+    next(err);
+  }
 });
 
 // --- PROMPTS CRUD API ---
