@@ -33,7 +33,7 @@
       rows="3"
       placeholder="Enter your creative prompt..."
       required
-    />
+    ></textarea>
     <button type="submit" disabled={loading || !prompt.trim()}>
       {loading ? 'Generating...' : 'Generate'}
     </button>
