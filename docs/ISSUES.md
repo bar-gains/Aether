@@ -66,6 +66,22 @@ Establish a robust AI service abstraction and content generation flow, enabling 
 - Add a script in scripts/ (e.g., run-client-tests.sh) to run all frontend (client/) tests from anywhere in the project, mirroring the backend test script.
 - Scaffold and commit at least one Vitest-based test for the Svelte frontend to re-establish automated client testing.
 
+### TODO: Enhance Backend Test Coverage
+
+- Add prompt content validation tests:
+  - Verify created prompt content matches sent content
+  - Add validation for empty/invalid content
+  - Test prompt length limits and format requirements
+  - Check proper sanitization/escaping of special characters
+
+### TODO: Additional AI Service Test Coverage
+
+- Content Generation Flow Tests:
+  - Verify text generation flow end-to-end
+  - Test content structuring for preview/export
+  - Add response validation test cases
+  - Test basic quality checks (non-empty, etc.)
+
 ---
 
 ## Acceptance Criteria
