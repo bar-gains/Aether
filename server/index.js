@@ -55,6 +55,25 @@ require("./db");
 
 const crud = require("./crud");
 
+// --- PROMPT PROCESSING ENDPOINT ---
+app.post("/prompt", (req, res, next) => {
+  const { prompt } = req.body;
+  // Input validation
+  if (typeof prompt !== "string" || !prompt.trim()) {
+    return res
+      .status(400)
+      .json({ error: "Prompt is required and must be a non-empty string." });
+  }
+  // Simulate AI processing (replace with real AI integration later)
+  const aiResult = `Echo: ${prompt}`;
+  // Save prompt to DB (optional, for audit/logging)
+  crud.createPrompt(prompt, (err, dbResult) => {
+    if (err) return next(err);
+    // Respond with AI result and prompt id
+    res.status(201).json({ result: aiResult, promptId: dbResult.id });
+  });
+});
+
 // --- PROMPTS CRUD API ---
 app.post("/api/prompts", (req, res, next) => {
   const { prompt } = req.body;

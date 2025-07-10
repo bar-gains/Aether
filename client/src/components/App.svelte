@@ -1,120 +1,106 @@
 <script>
-  // Basic App component for AetherPress Svelte frontend
-  import { appState } from '../stores/appState.js';
-
-  // Fetch backend health status on mount
-  let health = null;
-  let apiError = null;
   let prompt = '';
   let aiResult = '';
-  let loadingAI = false;
-
-  async function checkHealth() {
-    appState.update(state => ({ ...state, loading: true, error: null }));
-    try {
-      const res = await fetch('/health'); // Use relative path for Vite proxy
-      if (!res.ok) throw new Error(`API error: ${res.status}`);
-      const data = await res.json();
-      health = data.status;
-      appState.update(state => ({ ...state, loading: false }));
-    } catch (err) {
-      apiError = err.message;
-      appState.update(state => ({ ...state, loading: false, error: err.message }));
-    }
-  }
+  let loading = false;
+  let error = '';
 
   async function submitPrompt() {
     aiResult = '';
-    apiError = null;
-    loadingAI = true;
+    error = '';
+    loading = true;
     try {
       const res = await fetch('/prompt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt })
       });
-      if (!res.ok) throw new Error(`AI error: ${res.status}`);
+      if (!res.ok) throw new Error(`Error: ${res.status}`);
       const data = await res.json();
       aiResult = data.result || JSON.stringify(data);
     } catch (err) {
-      apiError = err.message;
+      error = err.message;
     } finally {
-      loadingAI = false;
+      loading = false;
     }
   }
-
-  checkHealth();
 </script>
 
-<main>
-  <h1>AetherPress Svelte Frontend</h1>
-  <p>Welcome! This is the starting point for your Svelte SPA.</p>
-  <p>Current user: {$appState.user ? $appState.user : 'None'}</p>
-  <p>Backend health: {health ? health : 'Checking...'}</p>
-
-  <section style="margin-top:2rem; width:100%; max-width:500px;">
-    <h2>AI-Powered eBook Creation</h2>
-    <form on:submit|preventDefault={submitPrompt}>
-      <label for="prompt">Enter your creative prompt:</label>
-      <textarea id="prompt" bind:value={prompt} rows="4" style="width:100%;margin-top:0.5rem;"></textarea>
-      <button type="submit" disabled={loadingAI || !prompt.trim()} style="margin-top:1rem;">Generate</button>
-    </form>
-    {#if loadingAI}
-      <p>Generating with AI...</p>
-    {/if}
-    {#if aiResult}
-      <div style="margin-top:1.5rem; padding:1rem; border:1px solid #ccc; border-radius:8px; background:#fafafa;">
-        <h3>AI Result</h3>
-        <pre style="white-space:pre-wrap;">{aiResult}</pre>
-      </div>
-    {/if}
-    {#if apiError}
-      <p style="color: red">API Error: {apiError}</p>
-    {/if}
-  </section>
-</main>
+<div class="prompt-card">
+  <h2>AetherPress Prompt</h2>
+  <form on:submit|preventDefault={submitPrompt}>
+    <textarea
+      bind:value={prompt}
+      rows="3"
+      placeholder="Enter your creative prompt..."
+      required
+    />
+    <button type="submit" disabled={loading || !prompt.trim()}>
+      {loading ? 'Generating...' : 'Generate'}
+    </button>
+  </form>
+  {#if error}
+    <div class="error">{error}</div>
+  {/if}
+  {#if aiResult}
+    <div class="result">
+      <strong>AI Result:</strong>
+      <pre>{aiResult}</pre>
+    </div>
+  {/if}
+</div>
 
 <style>
-  main {
+  .prompt-card {
+    max-width: 420px;
+    margin: 2rem auto;
+    padding: 1.5rem 1.2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px #0001;
+    background: #fff;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    margin-top: 4rem;
-    font-family: system-ui, sans-serif;
-  }
-  h1 {
-    color: #ff3e00;
-    margin-bottom: 1rem;
-  }
-  p {
-    color: #444;
-  }
-  section {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    padding: 2rem;
+    gap: 1rem;
   }
   textarea {
+    width: 100%;
     font-size: 1rem;
-    font-family: inherit;
     border-radius: 6px;
     border: 1px solid #ccc;
     padding: 0.5rem;
     resize: vertical;
   }
   button {
+    width: 100%;
+    padding: 0.7rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: none;
     background: #ff3e00;
     color: #fff;
-    border: none;
-    border-radius: 6px;
-    padding: 0.5rem 1.5rem;
-    font-size: 1rem;
     cursor: pointer;
     transition: background 0.2s;
   }
   button:disabled {
     background: #ccc;
     cursor: not-allowed;
+  }
+  .error {
+    color: #b00020;
+    background: #ffeaea;
+    border-radius: 6px;
+    padding: 0.5rem;
+    font-size: 0.95rem;
+  }
+  .result {
+    background: #f6f8fa;
+    border-radius: 6px;
+    padding: 0.7rem;
+    font-size: 0.98rem;
+    overflow-x: auto;
+  }
+  pre {
+    margin: 0.5rem 0 0 0;
+    white-space: pre-wrap;
+    word-break: break-word;
   }
 </style>

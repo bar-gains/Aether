@@ -17,18 +17,18 @@ Implement and validate the full prompt processing flow for both backend and fron
 #### Backend
 
 1. **POST /prompt endpoint**
-   - [ ] Implement the POST /prompt route in Express.
-   - [ ] Add input validation for prompt data.
-   - [ ] Add error handling for invalid or failed requests.
-   - [ ] Ensure proper response formatting (e.g., { result: ... }).
+   - [x] Implement the POST /prompt route in Express.
+   - [x] Add input validation for prompt data.
+   - [x] Add error handling for invalid or failed requests.
+   - [x] Ensure proper response formatting (e.g., { result: ... }).
 
 #### Frontend
 
 2. **Prompt Input & Submission**
-   - [ ] Implement the prompt input form UI.
-   - [ ] Handle form submission and API call to /prompt.
-   - [ ] Show loading state during request.
-   - [ ] Display error messages for failed submissions.
+   - [x] Implement the prompt input form UI.
+   - [x] Handle form submission and API call to /prompt.
+   - [x] Show loading state during request.
+   - [x] Display error messages for failed submissions.
 
 ---
 
@@ -39,12 +39,12 @@ Implement and validate the full prompt processing flow for both backend and fron
 
 ---
 
-## Acceptance Criteria
+## Acceptance Criteria (Verification)
 
-- Users can submit prompts via the frontend and receive a response from the backend.
-- Input is validated and errors are handled gracefully.
-- The UI provides feedback for loading and error states.
-- The backend returns well-structured responses.
+- [x] Users can submit prompts via the frontend and receive a response from the backend.
+- [x] Input is validated and errors are handled gracefully.
+- [x] The UI provides feedback for loading and error states.
+- [x] The backend returns well-structured responses.
 
 ---
 

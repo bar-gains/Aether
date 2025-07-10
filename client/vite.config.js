@@ -7,6 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/health": "http://localhost:3000",
+      "/prompt": "http://localhost:3000",
       // Add more API routes here as needed
     },
   },
