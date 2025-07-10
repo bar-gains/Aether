@@ -1,31 +1,13 @@
 # MVP Checklist
 
-## Core Infrastructure
+## Core Infrastructure  ✅
 
-### Express Server
+### Express Server  ✔
 
-- [ ] Server initialization
-- [ ] Basic middleware setup
-- [ ] Error handling middleware
-- [ ] CORS configuration
-- [ ] Rate limiting
+### Svelte Frontend  ✔
 
-### Svelte Frontend
+### Database Setup  ✔
 
-- [ ] Component structure
-- [ ] State management
-- [ ] API integration
-- [ ] Error handling
-- [ ] Basic UI/UX
-
-### Database Setup
-
-- [ ] SQLite initialization (current)
-- [ ] Schema design
-- [ ] Migration system
-- [ ] Basic CRUD operations
-- [ ] Error handling
-- [ ] PostgreSQL migration (planned)
 
 ## Feature Checklist
 

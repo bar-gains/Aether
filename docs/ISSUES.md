@@ -1,71 +1,53 @@
-# Implementation Issues & Task Breakdown: Express Server Enhancements
+# Implementation Issues & Task Breakdown: Prompt Processing
 
 ## Purpose
 
-This section provides a detailed breakdown of the next implementation tasks for Express Server Enhancements, as outlined in the Core Infrastructure section of the MVP Checklist and NEXT_STEPS.
+This section provides a detailed breakdown of the next implementation tasks for Prompt Processing, as outlined in the Feature Checklist section of the MVP Checklist and NEXT_STEPS.
 
 ---
 
-## Express Server Enhancements Implementation
+## Prompt Processing Implementation
 
 ### Goal
 
-Strengthen the Express backend with advanced middleware, API versioning, validation, documentation, and scalability features.
+Implement and validate the full prompt processing flow for both backend and frontend, enabling users to submit prompts and receive AI-generated results.
 
 ### Tasks & Subtasks
 
-1. **Advanced Middleware**
+#### Backend
 
-   - [ ] Add security middleware (e.g., helmet).
-   - [ ] Add enhanced logging (e.g., winston or morgan with custom formats).
-   - [ ] Add compression middleware (e.g., compression).
+1. **POST /prompt endpoint**
+   - [ ] Implement the POST /prompt route in Express.
+   - [ ] Add input validation for prompt data.
+   - [ ] Add error handling for invalid or failed requests.
+   - [ ] Ensure proper response formatting (e.g., { result: ... }).
 
-2. **API Versioning**
+#### Frontend
 
-   - [ ] Design a versioning strategy (e.g., URL prefix `/api/v1/`).
-   - [ ] Refactor routes to support versioning.
-
-3. **Request Validation & Sanitization**
-
-   - [ ] Integrate a validation library (e.g., express-validator or joi).
-   - [ ] Add validation and sanitization to all API endpoints.
-   - [ ] Ensure proper error responses for invalid input.
-
-4. **Automated API Documentation**
-
-   - [ ] Integrate Swagger/OpenAPI (e.g., swagger-ui-express).
-   - [ ] Document all endpoints and schemas.
-   - [ ] Ensure docs are auto-generated and accessible (e.g., `/api-docs`).
-
-5. **Authentication & Authorization (Planning)**
-
-   - [ ] Plan for future authentication and authorization middleware.
-   - [ ] Document approach and requirements.
-
-6. **Scalability Preparation**
-   - [ ] Research and plan for clustering and load balancing.
-   - [ ] Document strategies for scaling Express in production.
+2. **Prompt Input & Submission**
+   - [ ] Implement the prompt input form UI.
+   - [ ] Handle form submission and API call to /prompt.
+   - [ ] Show loading state during request.
+   - [ ] Display error messages for failed submissions.
 
 ---
 
 ### Notes on Current State
 
-- Core Express backend is implemented and tested.
-- Enhancements will improve security, maintainability, and readiness for production.
+- Core infrastructure is in place (Express backend, Svelte frontend, SQLite database).
+- Prompt processing is the next major feature to enable end-to-end user flow.
 
 ---
 
 ## Acceptance Criteria
 
-- Security, logging, and compression middleware are active.
-- API versioning is in place and routes are updated.
-- All endpoints validate and sanitize input, with clear error responses.
-- Automated API documentation is available and up to date.
-- Authentication/authorization plan is documented.
-- Scalability strategies are documented.
+- Users can submit prompts via the frontend and receive a response from the backend.
+- Input is validated and errors are handled gracefully.
+- The UI provides feedback for loading and error states.
+- The backend returns well-structured responses.
 
 ---
 
 ## Notice
 
-**Further enhancements** (e.g., advanced monitoring, rate limiting, service mesh integration) can be planned after these enhancements are complete and verified.
+Further enhancements (AI processing, preview, override, PDF export, etc.) will be planned after prompt processing is complete and verified.

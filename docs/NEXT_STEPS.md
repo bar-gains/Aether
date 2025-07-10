@@ -1,85 +1,155 @@
-# NEXT_STEPS: Core Infrastructure Implementation Plan
+# NEXT STEPS
 
-## 1. Express Server ✔
+## Feature Checklist (from MVP Checklist)
 
-- **Status:** Pending
+### 1. Prompt Processing
 
-**Goal:** Establish a robust Express backend server for handling API requests and business logic.
+#### Backend
 
-**Steps:**
+- [ ] POST /prompt endpoint
+- [ ] Input validation
+- [ ] Error handling
+- [ ] Response formatting
 
-- Initialize Express server in `/server`.
-- Set up basic middleware (body parsing, logging, etc.).
-- Implement error handling middleware.
-- Add CORS configuration.
-- Implement basic rate limiting.
-- Create a basic API endpoint structure.
+#### Frontend
 
-**Acceptance Criteria:**
+- [ ] Prompt input form
+- [ ] Submit handling
+- [ ] Loading states
+- [ ] Error display
 
-- Server starts with `npm run dev` in `/server`.
-- Handles requests and errors as expected.
-- API endpoints are reachable and return correct responses.
+### 2. AI Processing Layer
 
----
+#### Service Abstraction
 
-## 2. Svelte Frontend ✔
+- [ ] AI service interface
+- [ ] Mock implementation
+- [ ] Error handling
+- [ ] Response formatting
 
-**Goal:** Establish a functional Svelte frontend that communicates with the backend and provides a foundation for UI/UX.
+#### Content Generation
 
-**Steps:**
+- [ ] Text generation flow
+- [ ] Content structuring
+- [ ] Response validation
+- [ ] Quality checks
 
-- Set up the Svelte app structure in `/client`.
-- Implement a basic App component and folder structure for components, assets, and styles.
-- Integrate state management (Svelte stores or context).
-- Implement API integration for backend communication (e.g., fetch or axios).
-- Add error handling for API calls and UI feedback.
-- Create a minimal UI/UX for initial user interaction.
+### 3. Content Preview
 
-**Acceptance Criteria:**
+#### Backend
 
-- App starts with `npm run dev` in `/client`.
-- Can successfully call backend endpoints and display results.
-- Handles errors gracefully and displays user-friendly messages.
+- [ ] GET /preview endpoint
+- [ ] HTML generation
+- [ ] Template system
+- [ ] Content formatting
 
----
+#### Frontend
 
-## 3. Database Setup ✔
+- [ ] Preview component
+- [ ] Real-time updates
+- [ ] Style handling
+- [ ] Responsive design
 
-**Goal:** Ensure reliable data persistence using SQLite (with planned migration to PostgreSQL).
+### 4. User Override System
 
-**Steps:**
+#### Backend
 
-- Initialize SQLite database in `/data`.
-- Design and document the schema for required tables.
-- Implement a migration system or script for schema updates.
-- Implement basic CRUD operations in the backend (create, read, update, delete).
-- Add error handling for all database operations.
-- Plan for future PostgreSQL migration.
+- [ ] POST /override endpoint
+- [ ] Content validation
+- [ ] Update handling
+- [ ] Version tracking
 
-**Acceptance Criteria:**
+#### Frontend
 
-- Database file exists and is accessible.
-- All required tables are present and correctly structured.
-- CRUD operations work as expected and handle errors.
-- Migration plan to PostgreSQL is documented.
+- [ ] Edit interface
+- [ ] Content validation
+- [ ] Save/update flow
+- [ ] Undo/redo
 
----
+### 5. PDF Export
 
-**General Guidance:**
+#### Backend
 
-- For each task, start by reviewing what (if anything) is already implemented.
-- Use the status assessment checklist from ISSUES.md and MVP_CHECKLIST.md to verify or plan each step.
-- Document findings and next steps before moving to implementation.
-- After implementation, test thoroughly and update documentation.
+- [ ] GET /export endpoint
+- [ ] pdf-lib setup (prototype)
+- [ ] Puppeteer setup (planned)
+- [ ] Content formatting
+- [ ] File handling
 
----
+#### Frontend
 
-## Planned Enhancements (Express Server)
+- [ ] Export trigger
+- [ ] Download handling
+- [ ] Progress indication
+- [ ] Error handling
 
-- Add advanced middleware (e.g., security, logging, compression)
-- Implement API versioning
-- Add request validation and sanitization
-- Integrate automated API documentation (e.g., Swagger/OpenAPI)
-- Plan for future authentication and authorization middleware
-- Prepare for scaling (e.g., clustering, load balancing)
+### 6. Data Persistence
+
+#### Database
+
+- [ ] Table structure
+- [ ] Indexes
+- [ ] Relationships
+- [ ] Query optimization
+
+#### Operations
+
+- [ ] Create operations
+- [ ] Read operations
+- [ ] Update operations
+- [ ] Delete operations
+
+## Testing Checklist
+
+### Unit Tests
+
+- [ ] Backend services
+- [ ] Frontend components
+- [ ] Database operations
+- [ ] Utility functions
+
+### Integration Tests
+
+- [ ] API endpoints
+- [ ] Frontend-backend integration
+- [ ] Database interactions
+- [ ] PDF generation
+
+### User Flow Tests
+
+- [ ] Prompt submission
+- [ ] Preview generation
+- [ ] Content editing
+- [ ] PDF export
+
+## Documentation Requirements
+
+### API Documentation
+
+- [ ] Endpoint specifications
+- [ ] Request/response formats
+- [ ] Error codes
+- [ ] Usage examples
+
+### Setup Guide
+
+- [ ] Installation steps
+- [ ] Configuration guide
+- [ ] Environment setup
+- [ ] Running instructions
+
+## Deployment Checklist
+
+### Environment
+
+- [ ] Development setup
+- [ ] Testing setup
+- [ ] Production configuration
+- [ ] Environment variables
+
+### Performance
+
+- [ ] Load testing
+- [ ] Resource optimization
+- [ ] Error monitoring
+- [ ] Logging setup
