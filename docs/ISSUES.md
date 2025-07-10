@@ -1,53 +1,74 @@
-# Implementation Issues & Task Breakdown: Prompt Processing
+# Implementation Issues & Task Breakdown: AI Processing Layer
 
 ## Purpose
 
-This section provides a detailed breakdown of the next implementation tasks for Prompt Processing, as outlined in the Feature Checklist section of the MVP Checklist and NEXT_STEPS.
+This section provides a detailed breakdown of the next implementation tasks for the AI Processing Layer, as outlined in the Feature Checklist section of the MVP Checklist and NEXT_STEPS.
 
 ---
 
-## Prompt Processing Implementation
+## AI Processing Layer Implementation
 
 ### Goal
 
-Implement and validate the full prompt processing flow for both backend and frontend, enabling users to submit prompts and receive AI-generated results.
+Establish a robust AI service abstraction and content generation flow, enabling the backend to generate, structure, and validate AI-powered content for user prompts.
 
 ### Tasks & Subtasks
 
-#### Backend
+#### Service Abstraction
 
-1. **POST /prompt endpoint**
-   - [x] Implement the POST /prompt route in Express.
-   - [x] Add input validation for prompt data.
-   - [x] Add error handling for invalid or failed requests.
-   - [x] Ensure proper response formatting (e.g., { result: ... }).
+1. **AI Service Interface**
 
-#### Frontend
+   - [ ] Design and implement an interface for AI service integration (e.g., OpenAI, Gemini, mock service).
+   - [ ] Ensure the interface supports text generation and can be extended for images or other modalities.
 
-2. **Prompt Input & Submission**
-   - [x] Implement the prompt input form UI.
-   - [x] Handle form submission and API call to /prompt.
-   - [x] Show loading state during request.
-   - [x] Display error messages for failed submissions.
+2. **Mock Implementation**
+
+   - [ ] Create a mock AI service for local development and testing.
+   - [ ] Ensure the mock returns realistic, structured responses.
+
+3. **Error Handling**
+
+   - [ ] Add error handling for failed AI service calls.
+   - [ ] Ensure errors are logged and returned in a consistent format.
+
+4. **Response Formatting**
+   - [ ] Standardize the format of AI service responses (e.g., { result: ... }).
+
+#### Content Generation
+
+5. **Text Generation Flow**
+
+   - [ ] Implement the flow for generating text content from prompts using the AI service abstraction.
+
+6. **Content Structuring**
+
+   - [ ] Structure generated content for downstream processing (e.g., preview, export).
+
+7. **Response Validation**
+
+   - [ ] Validate AI responses for completeness and correctness.
+
+8. **Quality Checks**
+   - [ ] Add basic quality checks (e.g., non-empty, not offensive, etc.).
 
 ---
 
 ### Notes on Current State
 
-- Core infrastructure is in place (Express backend, Svelte frontend, SQLite database).
-- Prompt processing is the next major feature to enable end-to-end user flow.
+- Prompt processing is complete and verified.
+- The next step is to abstract and implement the AI processing layer for content generation.
 
 ---
 
-## Acceptance Criteria (Verification)
+## Acceptance Criteria
 
-- [x] Users can submit prompts via the frontend and receive a response from the backend.
-- [x] Input is validated and errors are handled gracefully.
-- [x] The UI provides feedback for loading and error states.
-- [x] The backend returns well-structured responses.
+- The backend uses a service abstraction for AI content generation.
+- A mock AI service is available for development and testing.
+- Errors from the AI service are handled and returned in a standard format.
+- Generated content is structured, validated, and ready for preview/export.
 
 ---
 
 ## Notice
 
-Further enhancements (AI processing, preview, override, PDF export, etc.) will be planned after prompt processing is complete and verified.
+Further enhancements (real AI integration, advanced validation, etc.) will be planned after the AI processing layer is complete and verified.

@@ -6,17 +6,17 @@
 
 #### Backend
 
-- [ ] POST /prompt endpoint
-- [ ] Input validation
-- [ ] Error handling
-- [ ] Response formatting
+- [x] POST /prompt endpoint
+- [x] Input validation
+- [x] Error handling
+- [x] Response formatting
 
 #### Frontend
 
-- [ ] Prompt input form
-- [ ] Submit handling
-- [ ] Loading states
-- [ ] Error display
+- [x] Prompt input form
+- [x] Submit handling
+- [x] Loading states
+- [x] Error display
 
 ### 2. AI Processing Layer
 
