@@ -1,3 +1,5 @@
+// test-export-endpoint.js
+
 // Script to automate testing the /export endpoint and saving the PDF
 const fs = require("fs");
 const http = require("http");
@@ -24,11 +26,39 @@ const req = http.request(options, (res) => {
     res.resume();
     return;
   }
-  const file = fs.createWriteStream("./samples/automated_export_test.pdf");
+
+  // Implementation following ISSUES_recommend.md #1
+  let responseSize = 0;
+
+  res.on("data", (chunk) => {
+    responseSize += chunk.length;
+  });
+
+  const path = require("path");
+  const outputPath = path.resolve(
+    __dirname,
+    "../../samples/automated_export_test.pdf"
+  );
+  const file = fs.createWriteStream(outputPath);
+
+  file.on("error", (error) => {
+    console.error("File stream error:", error);
+    // Explicit error state closure
+    if (!file.closed) {
+      file.close();
+    }
+  });
+
   res.pipe(file);
+
   file.on("finish", () => {
-    file.close();
-    console.log("PDF saved as automated_export_test.pdf");
+    console.log(`Response size received: ${responseSize} bytes`);
+    // Ensure synchronous closure with callback verification
+    if (!file.closed) {
+      file.close(() => {
+        console.log("File stream explicitly closed after finish");
+      });
+    }
   });
 });
 

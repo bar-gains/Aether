@@ -213,11 +213,17 @@ app.post("/export", async (req, res, next) => {
     });
   }
 
+  console.log("--- Starting PDF generation ---");
   let page;
   try {
     page = await browserInstance.newPage();
+    console.log("Created new Puppeteer page");
+
     const contentObj = { title, body };
     await page.setContent(previewTemplate(contentObj));
+    console.log("Set page content successfully");
+
+    console.log("Starting PDF generation with Puppeteer...");
     const pdf = await page.pdf({
       format: "A4",
       printBackground: true,
@@ -240,9 +246,25 @@ app.post("/export", async (req, res, next) => {
     } catch (e) {
       console.error("Failed to write export_pdf_first16.bin:", e);
     }
+    console.log("\n--- Preparing response ---");
     res.setHeader("Content-Disposition", "inline; filename=output.pdf");
     res.setHeader("Content-Type", "application/pdf");
-    res.send(pdf);
+
+    console.log("Response headers set:", {
+      "Content-Type": res.getHeader("Content-Type"),
+      "Content-Disposition": res.getHeader("Content-Disposition"),
+    });
+
+    console.log(`PDF Buffer details:
+    - Total size: ${pdf.length} bytes
+    - First 5 bytes: ${pdf.slice(0, 5).toString()}
+    - Is Buffer?: ${Buffer.isBuffer(pdf)}
+    `);
+
+    console.log("Sending PDF response...");
+    // Use res.end() instead of res.send() to avoid Express's automatic handling
+    res.end(pdf);
+    console.log("PDF response sent successfully");
   } catch (err) {
     err.message = `Failed to generate PDF: ${err.message}`;
     next(err);
