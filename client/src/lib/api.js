@@ -87,3 +87,39 @@ export async function submitPrompt(prompt) {
 
   return response.json();
 }
+
+export async function loadPreview(content) {
+  const response = await fetchWithRetry(
+    `/preview?content=${encodeURIComponent(JSON.stringify(content))}`,
+    {
+      retryConfig: {
+        maxRetries: 3,
+        retryableStatuses: [500, 503], // Server errors most likely for preview
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Preview failed: ${response.status}`);
+  }
+
+  return response.text();
+}
+
+export async function saveOverride(content, changes) {
+  const response = await fetchWithRetry("/override", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ content, changes }),
+    retryConfig: {
+      maxRetries: 3,
+      retryableStatuses: [500, 503], // Server errors most likely for override
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Override failed: ${response.status}`);
+  }
+
+  return response.json();
+}
