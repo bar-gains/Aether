@@ -12,7 +12,7 @@ This section outlines the simplified implementation strategy to complete the cor
 
 ## Implementation Plan
 
-### Day 1: AI Mock & Preview  ✓
+### Day 1: AI Mock & Preview ✓
 
 #### Morning: Simple AI Service
 
@@ -52,7 +52,7 @@ app.get("/preview", (req, res) => {
 });
 ```
 
-### Day 2: Override & Export  
+### Day 2: Override & Export ✓
 
 #### Morning: Basic Override
 
@@ -68,15 +68,16 @@ app.post("/override", (req, res) => {
 #### Afternoon: PDF Export
 
 ```javascript
-const puppeteer = require('puppeteer');
+const puppeteer = require("puppeteer");
 
-app.get('/export', async (req, res) => {
+app.get("/export", async (req, res) => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.setContent(previewTemplate(req.query.content));
-  const pdf = await page.pdf({ format: 'A4' });
+  const pdf = await page.pdf({ format: "A4" });
   await browser.close();
-  res.type('application/pdf').send(pdf);
+  res.setHeader("Content-Type", "application/pdf");
+  res.end(pdf); // Use res.end() for binary data
 });
 ```
 
@@ -88,22 +89,23 @@ app.get('/export', async (req, res) => {
 // Simple preview component
 const Preview = {
   async load(content) {
-    const response = await fetch('/preview?content=' +
-      encodeURIComponent(JSON.stringify(content)));
+    const response = await fetch(
+      "/preview?content=" + encodeURIComponent(JSON.stringify(content))
+    );
     return response.text();
-  }
+  },
 };
 
 // Basic override component
 const Editor = {
   async save(content, changes) {
-    const response = await fetch('/override', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content, changes })
+    const response = await fetch("/override", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content, changes }),
     });
     return response.json();
-  }
+  },
 };
 ```
 
