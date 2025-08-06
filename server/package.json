@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "start:ci": "ts-node ./bin/www.ts",
+    "dev:ci": "DEBUG=* ts-node ./bin/www.ts",
+    "lint": "eslint . --ext .ts",
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "vitest",
@@ -15,7 +18,7 @@
     "express": "^4.21.2",
     "express-rate-limit": "^7.5.1",
     "morgan": "^1.10.0",
-    "puppeteer": "^24.12.1",
+    "puppeteer": "^24.15.0",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
