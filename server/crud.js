@@ -109,11 +109,40 @@ exports.createOverride = (ai_result_id, override, cb) => {
 };
 
 exports.getOverrides = (cb) => {
-  db.all(`SELECT * FROM overrides ORDER BY created_at DESC`, [], cb);
+  db.all(
+    `SELECT * FROM overrides ORDER BY created_at DESC`,
+    [],
+    (err, rows) => {
+      if (err) return cb(err);
+      try {
+        rows = rows.map((row) => ({
+          ...row,
+          override:
+            typeof row.override === "string"
+              ? JSON.parse(row.override)
+              : row.override,
+        }));
+        cb(null, rows);
+      } catch (e) {
+        cb(new Error("Invalid JSON in database"));
+      }
+    }
+  );
 };
 
 exports.getOverrideById = (id, cb) => {
-  db.get(`SELECT * FROM overrides WHERE id = ?`, [id], cb);
+  db.get(`SELECT * FROM overrides WHERE id = ?`, [id], (err, row) => {
+    if (err || !row) return cb(err, row);
+    try {
+      row.override =
+        typeof row.override === "string"
+          ? JSON.parse(row.override)
+          : row.override;
+      cb(null, row);
+    } catch (e) {
+      cb(new Error("Invalid JSON in database"));
+    }
+  });
 };
 
 exports.updateOverride = (id, override, cb) => {

@@ -356,127 +356,883 @@ app.post("/export", async (req, res, next) => {
 // --- PROMPTS CRUD API ---
 app.post("/api/prompts", (req, res, next) => {
   const { prompt } = req.body;
-  if (!prompt) return res.status(400).json({ error: "Prompt is required" });
+
+  // Input validation with structured error
+  if (typeof prompt !== "string" || !prompt.trim()) {
+    return sendValidationError(
+      res,
+      "Prompt is required and must be a non-empty string",
+      {
+        provided: typeof prompt,
+        required: "non-empty string",
+        received: prompt,
+      }
+    );
+  }
+
   crud.createPrompt(prompt, (err, result) => {
-    if (err) return next(err);
-    res.status(201).json(result);
+    if (err) {
+      // Handle specific database errors
+      if (err.code === "SQLITE_CONSTRAINT") {
+        err.status = 409;
+        err.message = "Duplicate prompt not allowed";
+      } else {
+        err.status = 500;
+        err.message = "Failed to create prompt";
+      }
+      return next(err);
+    }
+
+    // Return standardized success response
+    res.status(201).json({
+      success: true,
+      data: result,
+    });
   });
 });
 
 app.get("/api/prompts", (req, res, next) => {
+  // Parse pagination parameters
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+
+  // Validate pagination parameters
+  if (page < 1 || limit < 1) {
+    return sendValidationError(res, "Invalid pagination parameters", {
+      provided: { page, limit },
+      required: "positive integers",
+      details: "Page and limit must be greater than 0",
+    });
+  }
+
+  // Calculate offset
+  const offset = (page - 1) * limit;
+
   crud.getPrompts((err, rows) => {
-    if (err) return next(err);
-    res.json(rows);
+    if (err) {
+      err.status = 500;
+      err.message = "Failed to retrieve prompts";
+      return next(err);
+    }
+
+    // Handle empty results
+    if (!rows || rows.length === 0) {
+      return res.status(200).json({
+        success: true,
+        data: [],
+        pagination: {
+          page,
+          limit,
+          total: 0,
+          pages: 0,
+        },
+      });
+    }
+
+    // Calculate total pages
+    const total = rows.length;
+    const pages = Math.ceil(total / limit);
+
+    // Paginate results
+    const paginatedRows = rows.slice(offset, offset + limit);
+
+    // Return standardized success response with pagination
+    res.status(200).json({
+      success: true,
+      data: paginatedRows,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages,
+      },
+    });
   });
 });
 
 app.get("/api/prompts/:id", (req, res, next) => {
-  crud.getPromptById(req.params.id, (err, row) => {
-    if (err) return next(err);
-    if (!row) return res.status(404).json({ error: "Not found" });
-    res.json(row);
+  // Validate ID parameter
+  const id = parseInt(req.params.id);
+  if (isNaN(id) || id < 1) {
+    return sendValidationError(res, "Invalid prompt ID", {
+      provided: req.params.id,
+      required: "positive integer",
+      details: "Prompt ID must be a positive integer",
+    });
+  }
+
+  crud.getPromptById(id, (err, row) => {
+    if (err) {
+      err.status = 500;
+      err.message = "Failed to retrieve prompt";
+      return next(err);
+    }
+
+    // Handle not found
+    if (!row) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          message: "Prompt not found",
+          code: "RESOURCE_NOT_FOUND",
+          status: 404,
+          details: { id },
+        },
+      });
+    }
+
+    // Return standardized success response
+    res.status(200).json({
+      success: true,
+      data: row,
+    });
   });
 });
 
 app.put("/api/prompts/:id", (req, res, next) => {
+  // Validate ID parameter
+  const id = parseInt(req.params.id);
+  if (isNaN(id) || id < 1) {
+    return sendValidationError(res, "Invalid prompt ID", {
+      provided: req.params.id,
+      required: "positive integer",
+      details: "Prompt ID must be a positive integer",
+    });
+  }
+
+  // Validate prompt in request body
   const { prompt } = req.body;
-  if (!prompt) return res.status(400).json({ error: "Prompt is required" });
-  crud.updatePrompt(req.params.id, prompt, (err, result) => {
-    if (err) return next(err);
-    res.json(result);
+  if (typeof prompt !== "string" || !prompt.trim()) {
+    return sendValidationError(
+      res,
+      "Prompt is required and must be a non-empty string",
+      {
+        provided: typeof prompt,
+        required: "non-empty string",
+        received: prompt,
+      }
+    );
+  }
+
+  crud.updatePrompt(id, prompt, (err, result) => {
+    if (err) {
+      // Handle specific database errors
+      if (err.code === "SQLITE_CONSTRAINT") {
+        err.status = 409;
+        err.message = "Duplicate prompt not allowed";
+      } else {
+        err.status = 500;
+        err.message = "Failed to update prompt";
+      }
+      return next(err);
+    }
+
+    // Handle not found case
+    if (!result || result.changes === 0) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          message: "Prompt not found",
+          code: "RESOURCE_NOT_FOUND",
+          status: 404,
+          details: { id },
+        },
+      });
+    }
+
+    // Return standardized success response
+    res.status(200).json({
+      success: true,
+      data: {
+        id,
+        prompt,
+        updated_at: new Date().toISOString(),
+      },
+    });
   });
 });
 
 app.delete("/api/prompts/:id", (req, res, next) => {
-  crud.deletePrompt(req.params.id, (err, result) => {
-    if (err) return next(err);
-    res.json(result);
+  // Validate ID parameter
+  const id = parseInt(req.params.id);
+  if (isNaN(id) || id < 1) {
+    return sendValidationError(res, "Invalid prompt ID", {
+      provided: req.params.id,
+      required: "positive integer",
+      details: "Prompt ID must be a positive integer",
+    });
+  }
+
+  crud.deletePrompt(id, (err, result) => {
+    if (err) {
+      // Handle specific database errors
+      if (err.code === "SQLITE_FOREIGN_KEY") {
+        err.status = 409;
+        err.message = "Cannot delete prompt: It is referenced by other records";
+      } else {
+        err.status = 500;
+        err.message = "Failed to delete prompt";
+      }
+      return next(err);
+    }
+
+    // Handle not found case
+    if (!result || result.changes === 0) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          message: "Prompt not found",
+          code: "RESOURCE_NOT_FOUND",
+          status: 404,
+          details: { id },
+        },
+      });
+    }
+
+    // Return standardized success response
+    res.status(200).json({
+      success: true,
+      data: {
+        message: "Prompt deleted successfully",
+        id,
+        deleted_at: new Date().toISOString(),
+      },
+    });
   });
 });
 
 // --- AI_RESULTS CRUD API ---
 app.post("/api/ai_results", (req, res, next) => {
   const { prompt_id, result } = req.body;
-  if (!prompt_id || !result)
-    return res.status(400).json({ error: "prompt_id and result are required" });
+
+  // Validate prompt_id
+  if (!Number.isInteger(prompt_id) || prompt_id < 1) {
+    return sendValidationError(res, "prompt_id must be a positive integer", {
+      provided: typeof prompt_id === "number" ? prompt_id : typeof prompt_id,
+      required: "positive integer",
+      details: "prompt_id must be a valid prompt reference",
+    });
+  }
+
+  // Validate result object
+  if (!result || typeof result !== "object" || Array.isArray(result)) {
+    return sendValidationError(res, "result must be a valid object", {
+      provided: Array.isArray(result) ? "array" : typeof result,
+      required: "object",
+      details: "result must contain the AI generation output",
+    });
+  }
+
+  // Validate required result properties
+  const requiredProps = ["content", "metadata"];
+  const missingProps = requiredProps.filter((prop) => !(prop in result));
+  if (missingProps.length > 0) {
+    return sendValidationError(res, "Missing required properties in result", {
+      missing: missingProps,
+      required: requiredProps,
+      provided: Object.keys(result),
+    });
+  }
+
   crud.createAIResult(prompt_id, result, (err, resultObj) => {
-    if (err) return next(err);
-    res.status(201).json(resultObj);
+    if (err) {
+      // Handle specific database errors
+      if (err.code === "SQLITE_FOREIGN_KEY") {
+        err.status = 404;
+        err.message = "Referenced prompt not found";
+      } else if (err.code === "SQLITE_CONSTRAINT") {
+        err.status = 409;
+        err.message = "Duplicate AI result not allowed";
+      } else {
+        err.status = 500;
+        err.message = "Failed to create AI result";
+      }
+      return next(err);
+    }
+
+    // Return standardized success response
+    res.status(201).json({
+      success: true,
+      data: {
+        ...resultObj,
+        created_at: new Date().toISOString(),
+      },
+    });
   });
 });
 
 app.get("/api/ai_results", (req, res, next) => {
+  // Parse and validate pagination parameters
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const prompt_id = req.query.prompt_id ? parseInt(req.query.prompt_id) : null;
+
+  // Validate pagination parameters
+  if (page < 1 || limit < 1) {
+    return sendValidationError(res, "Invalid pagination parameters", {
+      provided: { page, limit },
+      required: "positive integers",
+      details: "Page and limit must be greater than 0",
+    });
+  }
+
+  // Validate prompt_id if provided
+  if (prompt_id !== null && (isNaN(prompt_id) || prompt_id < 1)) {
+    return sendValidationError(res, "Invalid prompt_id filter", {
+      provided: req.query.prompt_id,
+      required: "positive integer",
+      details: "prompt_id must be a positive integer",
+    });
+  }
+
+  // Calculate offset
+  const offset = (page - 1) * limit;
+
   crud.getAIResults((err, rows) => {
-    if (err) return next(err);
-    res.json(rows);
+    if (err) {
+      err.status = 500;
+      err.message = "Failed to retrieve AI results";
+      return next(err);
+    }
+
+    // Filter by prompt_id if provided
+    let filteredRows = rows;
+    if (prompt_id) {
+      filteredRows = rows.filter((row) => row.prompt_id === prompt_id);
+    }
+
+    // Handle empty results
+    if (!filteredRows || filteredRows.length === 0) {
+      return res.status(200).json({
+        success: true,
+        data: [],
+        pagination: {
+          page,
+          limit,
+          total: 0,
+          pages: 0,
+        },
+      });
+    }
+
+    // Calculate pagination
+    const total = filteredRows.length;
+    const pages = Math.ceil(total / limit);
+    const paginatedRows = filteredRows.slice(offset, offset + limit);
+
+    // Return standardized success response
+    res.status(200).json({
+      success: true,
+      data: paginatedRows,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages,
+        prompt_id: prompt_id || undefined,
+      },
+    });
   });
 });
 
 app.get("/api/ai_results/:id", (req, res, next) => {
-  crud.getAIResultById(req.params.id, (err, row) => {
-    if (err) return next(err);
-    if (!row) return res.status(404).json({ error: "Not found" });
-    res.json(row);
+  // Validate ID parameter
+  const id = parseInt(req.params.id);
+  if (isNaN(id) || id < 1) {
+    return sendValidationError(res, "Invalid AI result ID", {
+      provided: req.params.id,
+      required: "positive integer",
+      details: "AI result ID must be a positive integer",
+    });
+  }
+
+  crud.getAIResultById(id, (err, row) => {
+    if (err) {
+      err.status = 500;
+      err.message = "Failed to retrieve AI result";
+      return next(err);
+    }
+
+    // Handle not found
+    if (!row) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          message: "AI result not found",
+          code: "RESOURCE_NOT_FOUND",
+          status: 404,
+          details: { id },
+        },
+      });
+    }
+
+    // Return standardized success response
+    res.status(200).json({
+      success: true,
+      data: {
+        ...row,
+        result:
+          typeof row.result === "string" ? JSON.parse(row.result) : row.result,
+      },
+    });
   });
 });
 
 app.put("/api/ai_results/:id", (req, res, next) => {
+  // Validate ID parameter
+  const id = parseInt(req.params.id);
+  if (isNaN(id) || id < 1) {
+    return sendValidationError(res, "Invalid AI result ID", {
+      provided: req.params.id,
+      required: "positive integer",
+      details: "AI result ID must be a positive integer",
+    });
+  }
+
+  // Validate result object
   const { result } = req.body;
-  if (!result) return res.status(400).json({ error: "result is required" });
-  crud.updateAIResult(req.params.id, result, (err, resultObj) => {
-    if (err) return next(err);
-    res.json(resultObj);
+  if (!result || typeof result !== "object" || Array.isArray(result)) {
+    return sendValidationError(res, "result must be a valid object", {
+      provided: Array.isArray(result) ? "array" : typeof result,
+      required: "object",
+      details: "result must contain the AI generation output",
+    });
+  }
+
+  // Validate required result properties
+  const requiredProps = ["content", "metadata"];
+  const missingProps = requiredProps.filter((prop) => !(prop in result));
+  if (missingProps.length > 0) {
+    return sendValidationError(res, "Missing required properties in result", {
+      missing: missingProps,
+      required: requiredProps,
+      provided: Object.keys(result),
+    });
+  }
+
+  crud.updateAIResult(id, result, (err, resultObj) => {
+    if (err) {
+      // Handle specific database errors
+      if (err.code === "SQLITE_CONSTRAINT") {
+        err.status = 409;
+        err.message = "Constraint violation in update";
+      } else if (!resultObj || resultObj.changes === 0) {
+        return res.status(404).json({
+          success: false,
+          error: {
+            message: "AI result not found",
+            code: "RESOURCE_NOT_FOUND",
+            status: 404,
+            details: { id },
+          },
+        });
+      } else {
+        err.status = 500;
+        err.message = "Failed to update AI result";
+      }
+      return next(err);
+    }
+
+    // Return standardized success response
+    res.status(200).json({
+      success: true,
+      data: {
+        id,
+        result,
+        updated_at: new Date().toISOString(),
+      },
+    });
   });
 });
 
 app.delete("/api/ai_results/:id", (req, res, next) => {
-  crud.deleteAIResult(req.params.id, (err, resultObj) => {
-    if (err) return next(err);
-    res.json(resultObj);
+  // Validate ID parameter
+  const id = parseInt(req.params.id);
+  if (isNaN(id) || id < 1) {
+    return sendValidationError(res, "Invalid AI result ID", {
+      provided: req.params.id,
+      required: "positive integer",
+      details: "AI result ID must be a positive integer",
+    });
+  }
+
+  crud.deleteAIResult(id, (err, resultObj) => {
+    if (err) {
+      // Handle specific database errors
+      if (err.code === "SQLITE_FOREIGN_KEY") {
+        err.status = 409;
+        err.message =
+          "Cannot delete AI result: It is referenced by other records";
+      } else {
+        err.status = 500;
+        err.message = "Failed to delete AI result";
+      }
+      return next(err);
+    }
+
+    // Handle not found case
+    if (!resultObj || resultObj.changes === 0) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          message: "AI result not found",
+          code: "RESOURCE_NOT_FOUND",
+          status: 404,
+          details: { id },
+        },
+      });
+    }
+
+    // Return standardized success response
+    res.status(200).json({
+      success: true,
+      data: {
+        message: "AI result deleted successfully",
+        id,
+        deleted_at: new Date().toISOString(),
+      },
+    });
   });
 });
 
 // --- OVERRIDES CRUD API ---
 app.post("/api/overrides", (req, res, next) => {
   const { ai_result_id, override } = req.body;
-  if (!ai_result_id || !override)
-    return res
-      .status(400)
-      .json({ error: "ai_result_id and override are required" });
+
+  // Validate ai_result_id
+  if (!Number.isInteger(ai_result_id) || ai_result_id < 1) {
+    return sendValidationError(res, "ai_result_id must be a positive integer", {
+      provided:
+        typeof ai_result_id === "number" ? ai_result_id : typeof ai_result_id,
+      required: "positive integer",
+      details: "ai_result_id must be a valid AI result reference",
+    });
+  }
+
+  // Validate override object
+  if (!override || typeof override !== "object" || Array.isArray(override)) {
+    return sendValidationError(res, "override must be a valid object", {
+      provided: Array.isArray(override) ? "array" : typeof override,
+      required: "object",
+      details: "override must contain the modifications to the AI result",
+    });
+  }
+
+  // Validate override properties
+  const allowedProps = ["content", "metadata", "changes"];
+  const invalidProps = Object.keys(override).filter(
+    (prop) => !allowedProps.includes(prop)
+  );
+  if (invalidProps.length > 0) {
+    return sendValidationError(res, "Invalid properties in override object", {
+      invalid: invalidProps,
+      allowed: allowedProps,
+      provided: Object.keys(override),
+    });
+  }
+
+  // Ensure at least one valid modification
+  if (Object.keys(override).length === 0) {
+    return sendValidationError(
+      res,
+      "Override must contain at least one modification",
+      {
+        provided: "empty object",
+        required: "at least one of: content, metadata, changes",
+        details: "Override cannot be empty",
+      }
+    );
+  }
+
   crud.createOverride(ai_result_id, override, (err, resultObj) => {
-    if (err) return next(err);
-    res.status(201).json(resultObj);
+    if (err) {
+      // Handle specific database errors
+      if (err.code === "SQLITE_FOREIGN_KEY") {
+        err.status = 404;
+        err.message = "Referenced AI result not found";
+      } else if (err.code === "SQLITE_CONSTRAINT") {
+        err.status = 409;
+        err.message = "Duplicate override not allowed";
+      } else {
+        err.status = 500;
+        err.message = "Failed to create override";
+      }
+      return next(err);
+    }
+
+    // Return standardized success response
+    res.status(201).json({
+      success: true,
+      data: {
+        ...resultObj,
+        created_at: new Date().toISOString(),
+      },
+    });
   });
 });
 
 app.get("/api/overrides", (req, res, next) => {
+  // Parse and validate pagination parameters
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const ai_result_id = req.query.ai_result_id
+    ? parseInt(req.query.ai_result_id)
+    : null;
+
+  // Validate pagination parameters
+  if (page < 1 || limit < 1) {
+    return sendValidationError(res, "Invalid pagination parameters", {
+      provided: { page, limit },
+      required: "positive integers",
+      details: "Page and limit must be greater than 0",
+    });
+  }
+
+  // Validate ai_result_id if provided
+  if (ai_result_id !== null && (isNaN(ai_result_id) || ai_result_id < 1)) {
+    return sendValidationError(res, "Invalid ai_result_id filter", {
+      provided: req.query.ai_result_id,
+      required: "positive integer",
+      details: "ai_result_id must be a positive integer",
+    });
+  }
+
+  // Calculate offset
+  const offset = (page - 1) * limit;
+
   crud.getOverrides((err, rows) => {
-    if (err) return next(err);
-    res.json(rows);
+    if (err) {
+      err.status = 500;
+      err.message = "Failed to retrieve overrides";
+      return next(err);
+    }
+
+    // Filter by ai_result_id if provided
+    let filteredRows = rows;
+    if (ai_result_id) {
+      filteredRows = rows.filter((row) => row.ai_result_id === ai_result_id);
+    }
+
+    // Handle empty results
+    if (!filteredRows || filteredRows.length === 0) {
+      return res.status(200).json({
+        success: true,
+        data: [],
+        pagination: {
+          page,
+          limit,
+          total: 0,
+          pages: 0,
+        },
+      });
+    }
+
+    // Calculate pagination
+    const total = filteredRows.length;
+    const pages = Math.ceil(total / limit);
+    const paginatedRows = filteredRows.slice(offset, offset + limit);
+
+    // Parse override JSON if stored as string
+    const processedRows = paginatedRows.map((row) => ({
+      ...row,
+      override:
+        typeof row.override === "string"
+          ? JSON.parse(row.override)
+          : row.override,
+    }));
+
+    // Return standardized success response
+    res.status(200).json({
+      success: true,
+      data: processedRows,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages,
+        ai_result_id: ai_result_id || undefined,
+      },
+    });
   });
 });
 
 app.get("/api/overrides/:id", (req, res, next) => {
-  crud.getOverrideById(req.params.id, (err, row) => {
-    if (err) return next(err);
-    if (!row) return res.status(404).json({ error: "Not found" });
-    res.json(row);
+  // Validate ID parameter
+  const id = parseInt(req.params.id);
+  if (isNaN(id) || id < 1) {
+    return sendValidationError(res, "Invalid override ID", {
+      provided: req.params.id,
+      required: "positive integer",
+      details: "Override ID must be a positive integer",
+    });
+  }
+
+  crud.getOverrideById(id, (err, row) => {
+    if (err) {
+      err.status = 500;
+      err.message = "Failed to retrieve override";
+      return next(err);
+    }
+
+    // Handle not found
+    if (!row) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          message: "Override not found",
+          code: "RESOURCE_NOT_FOUND",
+          status: 404,
+          details: { id },
+        },
+      });
+    }
+
+    // Parse override JSON if stored as string
+    const processedRow = {
+      ...row,
+      override:
+        typeof row.override === "string"
+          ? JSON.parse(row.override)
+          : row.override,
+    };
+
+    // Return standardized success response
+    res.status(200).json({
+      success: true,
+      data: processedRow,
+    });
   });
 });
 
 app.put("/api/overrides/:id", (req, res, next) => {
+  // Validate ID parameter
+  const id = parseInt(req.params.id);
+  if (isNaN(id) || id < 1) {
+    return sendValidationError(res, "Invalid override ID", {
+      provided: req.params.id,
+      required: "positive integer",
+      details: "Override ID must be a positive integer",
+    });
+  }
+
+  // Validate override object
   const { override } = req.body;
-  if (!override) return res.status(400).json({ error: "override is required" });
-  crud.updateOverride(req.params.id, override, (err, resultObj) => {
-    if (err) return next(err);
-    res.json(resultObj);
+  if (!override || typeof override !== "object" || Array.isArray(override)) {
+    return sendValidationError(res, "override must be a valid object", {
+      provided: Array.isArray(override) ? "array" : typeof override,
+      required: "object",
+      details: "override must contain the modifications to the AI result",
+    });
+  }
+
+  // Validate override properties
+  const allowedProps = ["content", "metadata", "changes"];
+  const invalidProps = Object.keys(override).filter(
+    (prop) => !allowedProps.includes(prop)
+  );
+  if (invalidProps.length > 0) {
+    return sendValidationError(res, "Invalid properties in override object", {
+      invalid: invalidProps,
+      allowed: allowedProps,
+      provided: Object.keys(override),
+    });
+  }
+
+  // Ensure at least one valid modification
+  if (Object.keys(override).length === 0) {
+    return sendValidationError(
+      res,
+      "Override must contain at least one modification",
+      {
+        provided: "empty object",
+        required: "at least one of: content, metadata, changes",
+        details: "Override cannot be empty",
+      }
+    );
+  }
+
+  crud.updateOverride(id, override, (err, resultObj) => {
+    if (err) {
+      // Handle specific database errors
+      if (err.code === "SQLITE_CONSTRAINT") {
+        err.status = 409;
+        err.message = "Constraint violation in update";
+      } else if (!resultObj || resultObj.changes === 0) {
+        return res.status(404).json({
+          success: false,
+          error: {
+            message: "Override not found",
+            code: "RESOURCE_NOT_FOUND",
+            status: 404,
+            details: { id },
+          },
+        });
+      } else {
+        err.status = 500;
+        err.message = "Failed to update override";
+      }
+      return next(err);
+    }
+
+    // Return standardized success response
+    res.status(200).json({
+      success: true,
+      data: {
+        id,
+        override,
+        updated_at: new Date().toISOString(),
+      },
+    });
   });
 });
 
 app.delete("/api/overrides/:id", (req, res, next) => {
-  crud.deleteOverride(req.params.id, (err, resultObj) => {
-    if (err) return next(err);
-    res.json(resultObj);
+  // Validate ID parameter
+  const id = parseInt(req.params.id);
+  if (isNaN(id) || id < 1) {
+    return sendValidationError(res, "Invalid override ID", {
+      provided: req.params.id,
+      required: "positive integer",
+      details: "Override ID must be a positive integer",
+    });
+  }
+
+  crud.deleteOverride(id, (err, resultObj) => {
+    if (err) {
+      // Handle specific database errors
+      if (err.code === "SQLITE_FOREIGN_KEY") {
+        err.status = 409;
+        err.message =
+          "Cannot delete override: It is referenced by other records";
+      } else {
+        err.status = 500;
+        err.message = "Failed to delete override";
+      }
+      return next(err);
+    }
+
+    // Handle not found case
+    if (!resultObj || resultObj.changes === 0) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          message: "Override not found",
+          code: "RESOURCE_NOT_FOUND",
+          status: 404,
+          details: { id },
+        },
+      });
+    }
+
+    // Return standardized success response
+    res.status(200).json({
+      success: true,
+      data: {
+        message: "Override deleted successfully",
+        id,
+        deleted_at: new Date().toISOString(),
+      },
+    });
   });
 });
 
