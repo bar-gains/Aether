@@ -244,6 +244,70 @@ Next Implementation Task: Endpoint Wrappers
   - [ ] Binary response handling
   - [ ] Progress tracking capability
 
+##### 1.21 Endpoint Wrappers tests update
+Proceed with updating the test file to align with the backend's patterns:
+
+A reminder, ```backend error handling implementation, with /preview endpoint serving as our template for how to handle errors in other endpoints.```
+
+```javascript
+// Headers Test
+it("includes proper headers in request", async () => {
+  // Should only check Content-Type as that's what backend uses
+  expect(global.fetch).toHaveBeenCalledWith(
+    expect.any(String),
+    expect.objectContaining({
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+  );
+});
+```
+
+```javascript
+// Network Errors
+it("handles network errors gracefully", async () => {
+  // Backend uses sendProcessingError, so frontend should align
+  await expect(previewEndpoint({ prompt: "test" })).rejects.toThrow(
+    "Failed to generate preview: Unexpected error"  // This matches our current implementation
+  );
+});
+```
+
+```javascript
+// Malformed Responses
+it("handles network errors gracefully", async () => {
+  // Backend uses sendProcessingError, so frontend should align
+  await expect(previewEndpoint({ prompt: "test" })).rejects.toThrow(
+    "Failed to generate preview: Unexpected error"  // This matches our current implementation
+  );
+});
+```
+
+```javascript
+// Success Logging
+it("handles successful API responses", async () => {
+  // Backend sends standardized success responses, logger should capture this
+  const mockResponse = {
+    success: true,  // Match backend format
+    data: {
+      preview: "test content",
+      metadata: { timestamp: new Date().toISOString() }
+    }
+  };
+  // Rest of test...
+});
+```
+
+The key insights:
+
+    -Backend uses a standardized error response format via createErrorResponse
+    -Validation errors use sendValidationError
+    -Processing errors use sendProcessingError
+    -Success responses follow a `{success: true, data: {...}}` pattern
+
+The tests should be adjusted to expect these patterns rather than enforcing their own expectations that don't match the backend template.
+
 ### 2. Integration With Existing Code
 
 #### 2.1 API Updates
