@@ -89,8 +89,19 @@ export async function submitPrompt(prompt) {
 }
 
 export async function loadPreview(content) {
+  // Ensure content has required structure
+  if (!content || !content.title || !content.body) {
+    throw new Error("Preview content must include title and body");
+  }
+
   const response = await fetchWithRetry(
-    `/preview?content=${encodeURIComponent(JSON.stringify(content))}`,
+    `/preview?content=${encodeURIComponent(
+      JSON.stringify({
+        title: content.title,
+        body: content.body,
+        layout: content.layout || "default",
+      })
+    )}`,
     {
       retryConfig: {
         maxRetries: 3,
