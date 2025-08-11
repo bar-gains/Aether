@@ -23,6 +23,7 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
+    "@types/node": "^24.2.1",
     "@vitest/coverage-v8": "^3.2.4",
     "nodemon": "^3.1.10",
     "supertest": "^7.1.3",

@@ -7,22 +7,81 @@ const puppeteer = require("puppeteer");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Global service state management
+const serviceState = {
+  puppeteer: {
+    ready: false,
+    transitioning: false,
+    lastError: null,
+  },
+};
+
 // Puppeteer global browser instance
 let browserInstance;
-let puppeteerReady = false;
-(async () => {
+let puppeteerRestartAttempts = 0;
+const MAX_PUPPETEER_RESTARTS = 5;
+
+async function startPuppeteer() {
+  serviceState.puppeteer.transitioning = true;
+  console.log("[Puppeteer] Initializing...");
+
   try {
     browserInstance = await puppeteer.launch({
       executablePath: "/usr/bin/google-chrome",
       args: ["--no-sandbox"],
     });
-    puppeteerReady = true;
-    console.log("Puppeteer initialized successfully with system Chrome");
+
+    serviceState.puppeteer.ready = true;
+    serviceState.puppeteer.transitioning = false;
+    serviceState.puppeteer.lastError = null;
+    puppeteerRestartAttempts = 0;
+
+    console.log("[Puppeteer] Initialized successfully with system Chrome");
+
+    // Listen for browser disconnect/crash
+    browserInstance.on("disconnected", () => {
+      console.error("[Puppeteer] Browser disconnected. Attempting restart...");
+      serviceState.puppeteer.ready = false;
+      serviceState.puppeteer.transitioning = true;
+      serviceState.puppeteer.lastError = "Browser disconnected";
+      attemptPuppeteerRestart();
+    });
   } catch (err) {
-    console.error("Puppeteer failed to launch:", err);
-    // Optionally exit if critical: process.exit(1);
+    serviceState.puppeteer.ready = false;
+    serviceState.puppeteer.transitioning = false;
+    serviceState.puppeteer.lastError = err.message;
+    puppeteerRestartAttempts++;
+
+    console.error(
+      `[Puppeteer] Failed to launch (attempt ${puppeteerRestartAttempts}):`,
+      err
+    );
+
+    if (puppeteerRestartAttempts < MAX_PUPPETEER_RESTARTS) {
+      const delay = 2000 * puppeteerRestartAttempts; // Exponential backoff
+      console.log(`[Puppeteer] Retrying in ${delay}ms...`);
+      setTimeout(startPuppeteer, delay);
+    } else {
+      console.error(
+        "[Puppeteer] Max restart attempts reached. Manual intervention required."
+      );
+    }
   }
-})();
+}
+
+function attemptPuppeteerRestart() {
+  if (puppeteerRestartAttempts < MAX_PUPPETEER_RESTARTS) {
+    puppeteerRestartAttempts++;
+    setTimeout(startPuppeteer, 2000 * puppeteerRestartAttempts);
+  } else {
+    console.error(
+      "Max Puppeteer restart attempts reached. Manual intervention required."
+    );
+  }
+}
+
+// Initial Puppeteer launch
+startPuppeteer();
 
 // Trust proxy for rate limiting
 app.set("trust proxy", 1);
@@ -33,23 +92,135 @@ app.use(morgan("dev"));
 app.use(cors());
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 
+// Startup Readiness Probe Middleware
+app.use((req, res, next) => {
+  // Allow health check and root route to bypass readiness check
+  if (req.path === "/health" || req.path === "/") {
+    return next();
+  }
+
+  const timestamp = new Date().toISOString();
+
+  // Check if service is transitioning
+  if (serviceState.puppeteer.transitioning) {
+    return res.status(503).json({
+      status: "error",
+      reason: "Service transitioning: Puppeteer is restarting",
+      timestamp,
+      details: {
+        puppeteerError: serviceState.puppeteer.lastError,
+      },
+    });
+  }
+
+  // Check if service is ready
+  if (!serviceState.puppeteer.ready || !browserInstance) {
+    return res.status(503).json({
+      status: "error",
+      timestamp: new Date().toISOString(),
+      message: "Service not ready",
+      puppeteer: serviceState.puppeteer.transitioning ? "initializing" : "failed"
+    });
+  }
+
+  // If we reach here, services are ready
+  next();
+});
+
 // Health endpoint
 // Checks both SQLite3 and Puppeteer status
 const db = require("./db");
-app.get("/health", (req, res) => {
-  db.get("SELECT 1", (err) => {
-    if (err || !puppeteerReady) {
-      return res.status(503).json({
-        status: "error",
-        db: err ? "unavailable" : "ok",
-        puppeteer: puppeteerReady ? "ok" : "initializing",
-      });
+app.get("/health", async (req, res) => {
+  const timestamp = new Date().toISOString();
+  let puppeteerStatus;
+  let puppeteerError = null;
+
+  // Check Puppeteer status
+  if (!browserInstance) {
+    puppeteerStatus = "failed";
+    puppeteerError = "No browser instance";
+  } else if (serviceState.puppeteer.transitioning) {
+    puppeteerStatus = "transitioning";
+    puppeteerError = serviceState.puppeteer.lastError || "Service is initializing";
+  } else if (!serviceState.puppeteer.ready) {
+    puppeteerStatus = "failed";
+    puppeteerError = serviceState.puppeteer.lastError || "Service not ready";
+  } else {
+    try {
+      // Verify Puppeteer health with a quick test
+      const page = await browserInstance.newPage();
+      await page.close();
+      puppeteerStatus = "ok";
+    } catch (e) {
+      puppeteerStatus = "error";
+      puppeteerError = e.message;
+      serviceState.puppeteer.lastError = e.message;
+      serviceState.puppeteer.ready = false;
     }
-    res.status(200).json({
-      status: "ok",
-      db: "sqlite3",
-      puppeteer: "ok",
+  }
+
+  // Check DB status
+  db.get("SELECT 1", (err) => {
+    let dbStatus = "ok";
+    let dbError = null;
+
+    if (err) {
+      dbStatus = "failed";
+      dbError = err.message;
+    }
+
+    // Compose health check response
+    const health = {
+      status: dbStatus === "ok" && puppeteerStatus === "ok" ? "ok" : "error",
+      timestamp,
+      services: {
+        db: {
+          status: dbStatus,
+          error: dbError
+        },
+        puppeteer: {
+          status: puppeteerStatus,
+          error: puppeteerError
+        }
+      }
+    };
+
+    // Set appropriate status code
+    const statusCode = health.status === "ok" ? 200 : 503;
+    res.status(statusCode).json(health);
+  });
+});
+
+  // Check DB status
+  db.get("SELECT 1", (err) => {
+    let dbStatus = "ok";
+    let dbError = null;
+    if (err) {
+      dbStatus = "unavailable";
+      dbError = err.message;
+    }
+
+    // Log health check details
+    console.log("[HEALTH]", {
+      time: new Date().toISOString(),
+      db: dbStatus,
+      dbError,
+      puppeteer: puppeteerStatus,
+      puppeteerError,
     });
+
+    // Compose response
+    const health = {
+      status: dbStatus === "ok" && puppeteerStatus === "ok" ? "ok" : "error",
+      db: dbStatus,
+      puppeteer: puppeteerStatus,
+      timestamp: new Date().toISOString(),
+    };
+    if (dbError) health.dbError = dbError;
+    if (puppeteerError) health.puppeteerError = puppeteerError;
+
+    const statusCode = health.status === "ok" ? 200 : 503;
+    res.status(statusCode).json(health);
   });
 });
 
