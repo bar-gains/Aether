@@ -6,6 +6,14 @@ Document and track actionable steps to improve backend stability, focusing on er
 
 ---
 
+## Next Steps (Health Check Script)
+
+- Review and update the health check logic in `./start-app.sh` or related scripts to ensure it correctly interprets the `/health` endpoint response.
+- Add debug output to the script to show the exact response received and what is being checked.
+- Ensure the script matches the actual `/health` endpoint response and status code.
+
+---
+
 ## Proposed Stability Improvements
 
 ### 1. Enhance Health Endpoint
@@ -16,20 +24,30 @@ Document and track actionable steps to improve backend stability, focusing on er
 
 ### 2. Improve Puppeteer Lifecycle
 
-- [ ] Add auto-restart logic if Puppeteer crashes
-- [ ] Expose Puppeteer status in logs and health checks
-- [ ] Alert on repeated Puppeteer failures
+- [x] Add auto-restart logic if Puppeteer crashes
+- [x] Expose Puppeteer status in logs and health checks
+- [x] Alert on repeated Puppeteer failures
 
 ### 3. Database Robustness
 
-- [ ] Add retry logic for DB operations if locked
-- [ ] Log and alert on DB connection errors
-- [ ] Monitor DB file health and size
+- [x] Add retry logic for DB operations if locked (e.g., implement retry with exponential backoff for SQLITE_BUSY errors)
+- [x] Log and alert on DB connection errors (capture and log all DB errors, consider integration with alerting/monitoring)
+- [x] Monitor DB file health and size (periodically check DB file size, log warnings if thresholds are exceeded, and ensure disk space is sufficient)
 
 ### 4. Startup Readiness Probe
 
-- [ ] Delay accepting requests until Puppeteer and DB are ready
-- [ ] Return 503 with clear message if not ready
+- [ ] Add middleware to block all non-health requests with a 503 if either Puppeteer or the DB is not ready
+  - Place middleware early in the Express stack (after logging, before routes)
+  - Exclude `/health` (and optionally `/`) from readiness check
+  - Respond with status 503 and a clear JSON message if not ready
+- [ ] Test with Puppeteer and DB both up, both down, and one up/one down
+- [ ] Ensure health checks are always available
+
+**Estimated implementation time:**
+
+- Code changes: 20–40 minutes
+- Testing and validation: 20–30 minutes
+- Documentation/update: 5–10 minutes
 
 ### 5. Proxy/Container Configuration
 
