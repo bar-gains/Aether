@@ -36,20 +36,56 @@ app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 // Health endpoint
 // Checks both SQLite3 and Puppeteer status
 const db = require("./db");
-app.get("/health", (req, res) => {
-  db.get("SELECT 1", (err) => {
-    if (err || !puppeteerReady) {
-      return res.status(503).json({
-        status: "error",
-        db: err ? "unavailable" : "ok",
-        puppeteer: puppeteerReady ? "ok" : "initializing",
-      });
+app.get("/health", async (req, res) => {
+  // Check Puppeteer status
+  let puppeteerStatus = "unknown";
+  let puppeteerError = null;
+  if (!puppeteerReady || !browserInstance) {
+    puppeteerStatus = puppeteerReady ? "initializing" : "unavailable";
+    if (!puppeteerReady) puppeteerError = "Puppeteer not ready";
+    if (!browserInstance) puppeteerError = "No browser instance";
+  } else {
+    try {
+      // Try to create and close a page to verify Puppeteer health
+      const page = await browserInstance.newPage();
+      await page.close();
+      puppeteerStatus = "ok";
+    } catch (e) {
+      puppeteerStatus = "error";
+      puppeteerError = e.message;
     }
-    res.status(200).json({
-      status: "ok",
-      db: "sqlite3",
-      puppeteer: "ok",
+  }
+
+  // Check DB status
+  db.get("SELECT 1", (err) => {
+    let dbStatus = "ok";
+    let dbError = null;
+    if (err) {
+      dbStatus = "unavailable";
+      dbError = err.message;
+    }
+
+    // Log health check details
+    console.log("[HEALTH]", {
+      time: new Date().toISOString(),
+      db: dbStatus,
+      dbError,
+      puppeteer: puppeteerStatus,
+      puppeteerError,
     });
+
+    // Compose response
+    const health = {
+      status: dbStatus === "ok" && puppeteerStatus === "ok" ? "ok" : "error",
+      db: dbStatus,
+      puppeteer: puppeteerStatus,
+      timestamp: new Date().toISOString(),
+    };
+    if (dbError) health.dbError = dbError;
+    if (puppeteerError) health.puppeteerError = puppeteerError;
+
+    const statusCode = health.status === "ok" ? 200 : 503;
+    res.status(statusCode).json(health);
   });
 });
 
