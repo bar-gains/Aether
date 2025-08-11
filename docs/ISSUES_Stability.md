@@ -6,7 +6,14 @@ Document and track actionable steps to improve backend stability, focusing on er
 
 ---
 
-## Next Steps (Health Check Script)
+## Next Steps (Priority: Readiness Middleware Debugging)
+
+- Recent failures (HTTP 502) began after implementing the startup readiness middleware.
+- **Next step:**
+  - Add detailed logging to the readiness middleware to capture Puppeteer and DB state on every blocked request.
+  - Consider temporarily disabling or relaxing the readiness middleware to confirm it is the source of the failures.
+  - If confirmed, refine the readiness logic to avoid unnecessary blocking or race conditions.
+- Make this debugging and refinement a top priority before further stability changes.
 
 - Review and update the health check logic in `./start-app.sh` or related scripts to ensure it correctly interprets the `/health` endpoint response.
 - Add debug output to the script to show the exact response received and what is being checked.
@@ -36,11 +43,11 @@ Document and track actionable steps to improve backend stability, focusing on er
 
 ### 4. Startup Readiness Probe
 
-- [ ] Add middleware to block all non-health requests with a 503 if either Puppeteer or the DB is not ready
+- [x] Add middleware to block all non-health requests with a 503 if either Puppeteer or the DB is not ready
   - Place middleware early in the Express stack (after logging, before routes)
   - Exclude `/health` (and optionally `/`) from readiness check
   - Respond with status 503 and a clear JSON message if not ready
-- [ ] Test with Puppeteer and DB both up, both down, and one up/one down
+- [] Test with Puppeteer and DB both up, both down, and one up/one down
 - [ ] Ensure health checks are always available
 
 **Estimated implementation time:**

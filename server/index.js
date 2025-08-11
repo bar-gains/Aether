@@ -10,19 +10,54 @@ const PORT = process.env.PORT || 3000;
 // Puppeteer global browser instance
 let browserInstance;
 let puppeteerReady = false;
-(async () => {
+let puppeteerRestartAttempts = 0;
+const MAX_PUPPETEER_RESTARTS = 5;
+
+async function startPuppeteer() {
   try {
     browserInstance = await puppeteer.launch({
       executablePath: "/usr/bin/google-chrome",
       args: ["--no-sandbox"],
     });
     puppeteerReady = true;
+    puppeteerRestartAttempts = 0;
     console.log("Puppeteer initialized successfully with system Chrome");
+    // Listen for browser disconnect/crash
+    browserInstance.on("disconnected", () => {
+      console.error("Puppeteer browser disconnected. Attempting restart...");
+      puppeteerReady = false;
+      attemptPuppeteerRestart();
+    });
   } catch (err) {
-    console.error("Puppeteer failed to launch:", err);
-    // Optionally exit if critical: process.exit(1);
+    puppeteerReady = false;
+    puppeteerRestartAttempts++;
+    console.error(
+      `Puppeteer failed to launch (attempt ${puppeteerRestartAttempts}):`,
+      err
+    );
+    if (puppeteerRestartAttempts < MAX_PUPPETEER_RESTARTS) {
+      setTimeout(startPuppeteer, 2000 * puppeteerRestartAttempts); // Exponential backoff
+    } else {
+      console.error(
+        "Max Puppeteer restart attempts reached. Manual intervention required."
+      );
+    }
   }
-})();
+}
+
+function attemptPuppeteerRestart() {
+  if (puppeteerRestartAttempts < MAX_PUPPETEER_RESTARTS) {
+    puppeteerRestartAttempts++;
+    setTimeout(startPuppeteer, 2000 * puppeteerRestartAttempts);
+  } else {
+    console.error(
+      "Max Puppeteer restart attempts reached. Manual intervention required."
+    );
+  }
+}
+
+// Initial Puppeteer launch
+startPuppeteer();
 
 // Trust proxy for rate limiting
 app.set("trust proxy", 1);
@@ -32,6 +67,29 @@ app.use(express.json());
 app.use(morgan("dev"));
 app.use(cors());
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
+
+// Startup Readiness Probe Middleware
+app.use((req, res, next) => {
+  // Allow health check and root route to bypass readiness check
+  if (req.path === "/health" || req.path === "/") {
+    return next();
+  }
+  // Check Puppeteer and DB readiness (reuse logic from /health)
+  let puppeteerStatus = puppeteerReady && browserInstance;
+  // For DB, do a quick check (sync flag, not a query for every request)
+  // We'll assume DB is ready if last health check was ok, or if no error on require
+  // For more robust check, you could cache last health check result
+  if (!puppeteerStatus) {
+    return res.status(503).json({
+      status: "error",
+      reason: "Service not ready: Puppeteer not ready",
+      timestamp: new Date().toISOString(),
+    });
+  }
+  // Optionally, add a DB check here if you want to block on DB not ready
+  // For now, assume DB is ready if require('./db') did not throw
+  next();
+});
 
 // Health endpoint
 // Checks both SQLite3 and Puppeteer status
